@@ -1,7 +1,189 @@
 <div id="tile-view" hidden>
-	<div id="terrain"></div>
-	<div id="improvements"></div>
-	<div id="laborers"></div>
+  <div id="terrain"></div>
+  <div id="improvements"></div>
+  <div id="laborers"></div>
 </div>
 <div id="tile-menu" hidden></div>
 <div id="production-queue" hidden></div>
+
+<!-- Settings Overlay -->
+<div id="settings-view" hidden>
+  <div class="settings-container">
+    <h2 class="settings-title">Settings</h2>
+
+    <div class="settings-content">
+      <!-- Input Settings Section -->
+      <section class="settings-section">
+        <h3 class="section-title">Input Preferences</h3>
+
+        <div class="setting-row">
+          <label for="movement-keys" class="setting-label">Movement Keys</label>
+          <select id="movement-keys" class="setting-input">
+            <option value="default">Default (UIOJKL)</option>
+            <option value="wasd">WASD</option>
+            <option value="arrows">Arrow Keys</option>
+            <option value="custom">Custom</option>
+          </select>
+          <span class="setting-hint">Preferred keys for unit movement</span>
+        </div>
+
+        <div id="custom-keys-container" class="setting-row custom-keys" hidden>
+          <div class="custom-key-grid">
+            <div class="custom-key-item">
+              <label>Up-Left</label>
+              <input
+                type="text"
+                id="key-upLeft"
+                maxlength="1"
+                class="key-input"
+              />
+            </div>
+            <div class="custom-key-item">
+              <label>Up</label>
+              <input type="text" id="key-up" maxlength="1" class="key-input" />
+            </div>
+            <div class="custom-key-item">
+              <label>Up-Right</label>
+              <input
+                type="text"
+                id="key-upRight"
+                maxlength="1"
+                class="key-input"
+              />
+            </div>
+            <div class="custom-key-item">
+              <label>Down-Left</label>
+              <input
+                type="text"
+                id="key-downLeft"
+                maxlength="1"
+                class="key-input"
+              />
+            </div>
+            <div class="custom-key-item">
+              <label>Down</label>
+              <input
+                type="text"
+                id="key-down"
+                maxlength="1"
+                class="key-input"
+              />
+            </div>
+            <div class="custom-key-item">
+              <label>Down-Right</label>
+              <input
+                type="text"
+                id="key-downRight"
+                maxlength="1"
+                class="key-input"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <label for="drag-threshold" class="setting-label"
+            >Drag Sensitivity</label
+          >
+          <input
+            type="range"
+            id="drag-threshold"
+            class="setting-slider"
+            min="1"
+            max="20"
+            step="1"
+          />
+          <span id="drag-threshold-value" class="setting-value">4</span>
+          <span class="setting-hint"
+            >Lower = more sensitive (pixels to trigger drag)</span
+          >
+        </div>
+      </section>
+
+      <!-- Audio Settings Section -->
+      <section class="settings-section">
+        <h3 class="section-title">Audio</h3>
+
+        <div class="setting-row">
+          <label for="master-volume" class="setting-label">Master Volume</label>
+          <input
+            type="range"
+            id="master-volume"
+            class="setting-slider"
+            min="0"
+            max="100"
+            step="1"
+          />
+          <span id="master-volume-value" class="setting-value">70%</span>
+        </div>
+
+        <div class="setting-row">
+          <label for="music-volume" class="setting-label">Music Volume</label>
+          <input
+            type="range"
+            id="music-volume"
+            class="setting-slider"
+            min="0"
+            max="100"
+            step="1"
+          />
+          <span id="music-volume-value" class="setting-value">50%</span>
+        </div>
+
+        <div class="setting-row">
+          <label for="sfx-volume" class="setting-label">SFX Volume</label>
+          <input
+            type="range"
+            id="sfx-volume"
+            class="setting-slider"
+            min="0"
+            max="100"
+            step="1"
+          />
+          <span id="sfx-volume-value" class="setting-value">80%</span>
+        </div>
+      </section>
+
+      <!-- Display Settings Section -->
+      <section class="settings-section">
+        <h3 class="section-title">Display</h3>
+
+        <div class="setting-row">
+          <label for="show-grid" class="setting-label">Show Grid</label>
+          <input type="checkbox" id="show-grid" class="setting-checkbox" />
+        </div>
+
+        <div class="setting-row">
+          <label for="show-borders" class="setting-label"
+            >Show Territory Borders</label
+          >
+          <input type="checkbox" id="show-borders" class="setting-checkbox" />
+        </div>
+
+        <div class="setting-row">
+          <label for="animation-speed" class="setting-label"
+            >Animation Speed</label
+          >
+          <input
+            type="range"
+            id="animation-speed"
+            class="setting-slider"
+            min="0.1"
+            max="3.0"
+            step="0.1"
+          />
+          <span id="animation-speed-value" class="setting-value">1.0x</span>
+        </div>
+      </section>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="settings-actions">
+      <button id="settings-save" class="btn btn-primary">Save Changes</button>
+      <button id="settings-cancel" class="btn btn-secondary">Cancel</button>
+      <button id="settings-reset" class="btn btn-danger">
+        Reset to Defaults
+      </button>
+    </div>
+  </div>
+</div>

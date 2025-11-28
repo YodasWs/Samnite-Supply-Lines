@@ -1,100 +1,104 @@
-import World from '../../../json/world.mjs';
-import * as Honeycomb from 'honeycomb-grid';
-import * as GameConfig from './Config.mjs';
+import World from "../../../json/world.mjs";
+import * as Honeycomb from "honeycomb-grid";
+import * as GameConfig from "./Config.mjs";
 
-import Laborer from './Laborer.mjs';
-import Nation from './Nation.mjs';
-import { Grid } from './Hex.mjs';
-import { currentGame } from './Game.mjs';
+import Laborer from "./Laborer.mjs";
+import Nation from "./Nation.mjs";
+import { Grid } from "./Hex.mjs";
+import { currentGame } from "./Game.mjs";
 
-let scene = null;
-function City({
-	col,
-	row,
-	level = 1,
-	nation,
-} = {}) {
-	if (scene === null) {
-		scene = currentGame.scenes.getScene('mainGameScene');
-	}
-	if (!Nation.isNation(nation)) {
-		throw new TypeError('City expects to be assigned a Nation!');
-	}
+export default class City {
+  #hex;
+  #laborers = new Set();
+  #level;
+  #nation;
+  #queue = [];
+  #sprite;
 
-	// Tie to hex
-	const thisHex = Grid.getHex({ row, col });
-	thisHex.tile.setImprovement('destroy');
+  constructor({ col, row, level = 1, nation } = {}) {
+    if (!Nation.isNation(nation)) {
+      throw new TypeError("City expects to be assigned a Nation!");
+    }
 
-	const sprite = scene.add.image(thisHex.x, thisHex.y, 'cities', nation.frame).setDepth(GameConfig.depths.cities).setScale(0.8);
-	thisHex.city = this;
-	const laborers = new Set();
-	const queue = [];
+    const scene = currentGame.scenes.getScene("mainGameScene");
+    const thisHex = Grid.getHex({ row, col });
+    thisHex.tile.setImprovement("destroy");
 
-	// Claim this tile and adjacent tiles
-	Grid.traverse(Honeycomb.spiral({
-		start: [ thisHex.q, thisHex.r ],
-		radius: 1,
-	})).forEach((hex) => {
-		hex.tile.claimTerritory(nation, 100);
-	});
+    this.#hex = thisHex;
+    this.#level = level;
+    this.#nation = nation;
+    this.#sprite = scene.add
+      .image(thisHex.x, thisHex.y, "cities", nation.frame)
+      .setDepth(GameConfig.depths.cities)
+      .setScale(0.8);
+    thisHex.city = this;
 
-	// Claim water territory
-	Grid.traverse(Honeycomb.ring({
-		center: [ thisHex.q, thisHex.r ],
-		radius: 2,
-	})).forEach((hex) => {
-		if (hex.terrain.isWater) {
-			hex.tile.claimTerritory(nation, 50);
-		}
-	});
+    this.#claimTerritory();
+  }
 
-	// Properties
-	Object.defineProperties(this, {
-		hex: {
-			enumerable: true,
-			get: () => thisHex,
-		},
-		laborers: {
-			enumerable: true,
-			get: () => laborers,
-			set(val) {
-				if (!(val instanceof Laborer)) {
-					throw new TypeError('City.laborers expects to be assigned object instance of Laborer!');
-				}
-				laborers.add(val);
-				return true;
-			},
-		},
-		nation: {
-			enumerable: true,
-			get: () => nation,
-		},
-		sprite: {
-			get: () => sprite,
-		},
-		level: {
-			enumerable: true,
-			get: () => level,
-		},
-		queue: {
-			enumerable: true,
-			get: () => queue,
-		},
-	});
+  #claimTerritory() {
+    Grid.traverse(
+      Honeycomb.spiral({
+        start: [this.#hex.q, this.#hex.r],
+        radius: 1,
+      })
+    ).forEach((hex) => {
+      hex.tile.claimTerritory(this.#nation, 100);
+    });
+
+    Grid.traverse(
+      Honeycomb.ring({
+        center: [this.#hex.q, this.#hex.r],
+        radius: 2,
+      })
+    ).forEach((hex) => {
+      if (hex.terrain.isWater) {
+        hex.tile.claimTerritory(this.#nation, 50);
+      }
+    });
+  }
+
+  get hex() {
+    return this.#hex;
+  }
+
+  get laborers() {
+    return this.#laborers;
+  }
+  set laborers(val) {
+    if (!(val instanceof Laborer)) {
+      throw new TypeError(
+        "City.laborers expects to be assigned object instance of Laborer!"
+      );
+    }
+    this.#laborers.add(val);
+  }
+
+  get level() {
+    return this.#level;
+  }
+
+  get nation() {
+    return this.#nation;
+  }
+
+  get queue() {
+    return this.#queue;
+  }
+
+  get sprite() {
+    return this.#sprite;
+  }
+
+  addToQueue({ faction, unitType }) {
+    if (!(unitType in World.units)) {
+      console.warn(`City production queue: Unknown unit key ${unitType}`);
+      return;
+    }
+    this.#queue.push({ unitType, faction });
+  }
+
+  static isCity(city) {
+    return city instanceof City;
+  }
 }
-Object.assign(City.prototype, {
-	addToQueue({ faction, unitType }) {
-		if (!(unitType in World.units)) {
-			console.warn(`City production queue: Unknown unit key ${unitType}`);
-			return;
-		}
-		this.queue.push({
-			unitType,
-			faction,
-		});
-	},
-});
-City.isCity = function isCity(city) {
-	return city instanceof City;
-}
-export default City;

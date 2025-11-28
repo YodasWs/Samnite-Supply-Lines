@@ -1,296 +1,445 @@
-import { currentGame } from './Game.mjs';
+import { currentGame } from "./Game.mjs";
+import settingsManager from "./SettingsManager.mjs";
+import * as Hex from "./Hex.mjs";
+import Unit from "./Unit.mjs";
+import * as GameConfig from "./Config.mjs";
+import Tile from "./Tile.mjs";
 
-import * as Hex from './Hex.mjs';
-import Unit from './Unit.mjs';
+const KEYBOARD_SHORTCUTS = {
+  global: {
+    Escape: { action: "escape", description: "Close menu or open settings" },
+    F1: { action: "open-settings", description: "Open settings" },
+  },
+  mainGame: {
+    w: { action: "unit-wait", description: "Wait with current unit" },
+    s: { action: "unit-skip", description: "Skip current unit" },
+    F: { action: "build-farm", description: "Build farm (farmer unit)" },
+    F2: {
+      action: "clear-claims",
+      description: "Clear territorial claims display",
+    },
+    F3: { action: "show-claims", description: "Show territorial claims" },
+    u: {
+      action: "move-upleft",
+      description: "Move unit up-left",
+      movement: true,
+    },
+    i: { action: "move-up", description: "Move unit up", movement: true },
+    o: {
+      action: "move-upright",
+      description: "Move unit up-right",
+      movement: true,
+    },
+    j: {
+      action: "move-downleft",
+      description: "Move unit down-left",
+      movement: true,
+    },
+    k: { action: "move-down", description: "Move unit down", movement: true },
+    l: {
+      action: "move-downright",
+      description: "Move unit down-right",
+      movement: true,
+    },
+  },
+  cityView: {
+    Escape: { action: "close-city-view", description: "Close city view" },
+  },
+  tileView: {
+    Escape: { action: "close-tile-view", description: "Close tile view" },
+  },
+  settings: {
+    Escape: { action: "close-settings", description: "Close settings" },
+  },
+};
 
 export default class InputManager {
-	#cursors
-	#scene
-	#sceneKey
-	#shiftKey
+  #scene;
+  #sceneKey;
+  #cursors;
+  #shiftKey;
+  #isDragging = false;
+  #dragStart = { x: 0, y: 0 };
+  #camStart = { x: 0, y: 0 };
+  #keydownHandler = null;
+  #pointerHandlers = {};
 
-    constructor(scene) {
-		if (!(scene instanceof globalThis.Phaser.Scene)) {
-			throw new Error('InputManager requires a Phaser.Scene instance');
-		}
-
-		this.#scene = scene;
-		this.#shiftKey = scene.input.keyboard.addKey(globalThis.Phaser.Input.Keyboard.KeyCodes.SHIFT);
-		switch (this.#sceneKey = this.#scene.scene.key) {
-			case 'city-view':
-				this.#listenOnCityViewScene();
-				break;
-			case 'tile-view':
-				this.#listenOnTileViewScene();
-				break;
-			case 'mainGameScene':
-				this.#listenOnMainGameScene();
-				break;
-		}
-	}
-
-	disableKeyboardInput() {
-		const kbd = this.#scene.input?.keyboard;
-		if (typeof (kbd ?? false) !== 'object') {
-			return;
-		}
-		kbd.enabled = false;
-		kbd.removeCapture('SPACE');
-		kbd.removeCapture('UP');
-		kbd.removeCapture('DOWN');
-		kbd.removeCapture('LEFT');
-		kbd.removeCapture('RIGHT');
-	}
-
-	enableKeyboardInput() {
-		const kbd = this.#scene.input?.keyboard;
-		if (typeof (kbd ?? false) !== 'object') {
-			return;
-		}
-		kbd.enabled = true;
-		switch (this.#sceneKey) {
-			case 'mainGameScene':
-				this.#cursors = kbd.createCursorKeys();
-				break;
-		}
-	}
-
-	update() {
-		switch (this.#sceneKey) {
-			case 'mainGameScene':
-				const cam = this.#scene.cameras.main;
-				const speed = this.#shiftKey.isDown ? 25 : 5;
-
-				if (this.#cursors.left.isDown) {
-					cam.scrollX -= speed;
-				} else if (this.#cursors.right.isDown) {
-					cam.scrollX += speed;
-				}
-
-				if (this.#cursors.up.isDown) {
-					cam.scrollY -= speed;
-				} else if (this.#cursors.down.isDown) {
-					cam.scrollY += speed;
-				}
-				break;
-		}
-	}
-
-	#listenOnCityViewScene() {
-		// Set event listeners
-		this.#scene.input.keyboard.on('keydown', (evt) => {
-			if (evt.key === 'Escape') {
-				this.#scene.scene.stop('city-view');
-			}
-		});
-	}
-
-	#listenOnTileViewScene() {
-		document.querySelector('#tile-view').addEventListener('contextmenu', (e) => {
-			e.preventDefault();
-		});
-
-		// Set event listeners
-		this.#scene.input.keyboard.on('keydown', (evt) => {
-			if (evt.key === 'Escape') {
-				this.#scene.scene.stop('tile-view');
-			}
-		});
-
-		this.enableKeyboardInput();
-	}
-
-	#listenOnMainGameScene() {
-		currentGame.domContainer.addEventListener('contextmenu', (e) => {
-			e.preventDefault();
-		});
-		this.#scene.input.manager.canvas.addEventListener('contextmenu', (e) => {
-			e.preventDefault();
-		});
-
-		this.#scene.input.keyboard.on('keydown', (evt) => {
-			// Ctrl+R, reload; Ctrl+1, change browser tab
-			if (evt.ctrlKey && [
-				'r', 'R', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-			].includes(evt.key)) {
-				return;
-			}
-			// Ctrl+Shift+I, open Chrome dev tools
-			if (evt.ctrlKey && evt.key === 'I') return;
-
-			evt.preventDefault();
-			switch (evt.key) {
-				case 'q':
-					break;
-				case 'w':
-					currentGame.events.emit('key-pressed', 'wait');
-					return;
-				case 'e':
-					break;
-				case 'r':
-					break;
-				case 't':
-					break;
-				case 'y':
-					break;
-				case 'u':
-					// Handled below
-					break;
-				case 'i':
-					// Handled below
-					break;
-				case 'o':
-					// Handled below
-					break;
-				case 'p':
-					break;
-				case 'a':
-					break;
-				case 's':
-					currentGame.events.emit('key-pressed', 'skip');
-					return;
-				case 'd':
-					break;
-				case 'F':
-					currentGame.events.emit('key-pressed', 'build-farm');
-					break;
-				case 'f':
-					break;
-				case 'g':
-					break;
-				case 'h':
-					break;
-				case 'j':
-					// Handled below
-					break;
-				case 'k':
-					// Handled below
-					break;
-				case 'l':
-					// Handled below
-					break;
-				case 'z':
-					break;
-				case 'x':
-					break;
-				case 'c':
-					break;
-				case 'v':
-					break;
-				case 'b':
-					break;
-				case 'n':
-					break;
-				case 'm':
-					break;
-				case 'Escape':
-					currentGame.events.emit('esc-pressed');
-					break;
-				case 'F1':
-					// TODO: Help
-					break;
-				case 'F2':
-					break;
-					// TODO: Remove all layers, return to main map
-					currentGame.graphics.gfxClaims.destroy();
-					break;
-				case 'F3': {
-					break;
-					// TODO: Move to scenes/MainGame.mjs
-					// Show territorial claims
-					const graphics = currentGame.graphics.gfxClaims = this.#scene.add.graphics({ x: 0, y: 0 }).setDepth(GameConfig.depths.territoryLines - 1);
-					Hex.Grid.forEach((hex) => {
-						if (!Tile.isTile(hex.tile)) return;
-						if (!(hex.tile.claims() instanceof Map)) return;
-						hex.tile.claims().forEach((intClaim, player) => {
-							if (hex.tile.player === player) return;
-							graphics.lineStyle(3, player.color);
-							graphics.beginPath();
-							// TODO: Draw as a dashed line
-							// Draw points closer to center of hex
-							const [firstCorner, ...otherCorners] = hex.corners.map(point => GameConfig.lineShift(point, hex, 0.9));
-							graphics.moveTo(firstCorner.x, firstCorner.y);
-							otherCorners.forEach(({x, y}) => {
-								graphics.lineTo(x, y);
-							});
-							graphics.closePath();
-							graphics.strokePath();
-						});
-					});
-					break;
-				}
-				case 'F4':
-					break;
-				case 'F5':
-					break;
-			}
-
-			if (['u', 'i', 'o', 'j', 'k', 'l'].includes(evt.key)) {
-				if (!Unit.isMovableUnit(currentGame.activeUnit)) return;
-				currentGame.activeUnit.doAction(evt.key);
-			}
-		});
-
-		// Pointer handling: support drag-to-pan (drag) and click-to-open (click)
-		let isDragging = false;
-		const dragStart = { x: 0, y: 0 };
-		const camStart = { x: 0, y: 0 };
-		let dragThreshold = 4; // default (pixels)
-
-		this.#scene.input.on('pointerdown', (pointer) => {
-			// Record starting positions (screen coords and camera scroll)
-			dragStart.x = pointer.x;
-			dragStart.y = pointer.y;
-			camStart.x = this.#scene.cameras.main.scrollX;
-			camStart.y = this.#scene.cameras.main.scrollY;
-			isDragging = false;
-			// Set drag threshold based on input device type. Touch/pens are less precise
-			// so use a larger threshold to avoid accidental drags.
-			switch (pointer.pointerType) {
-				case 'touch':
-					dragThreshold = 10;
-					break;
-				case 'pen':
-					dragThreshold = 8;
-					break;
-				case 'mouse':
-				default:
-					dragThreshold = 4;
-			}
-		});
-
-		this.#scene.input.on('pointermove', (pointer) => {
-			if (!pointer.isDown) return;
-			const dx = pointer.x - dragStart.x;
-			const dy = pointer.y - dragStart.y;
-			// Start dragging after threshold so clicks are not interpreted as drags
-			if (!isDragging && (Math.abs(dx) > dragThreshold || Math.abs(dy) > dragThreshold)) {
-				isDragging = true;
-			}
-			if (isDragging) {
-				// Adjust camera scroll. Movement must be scaled by camera zoom to map
-				// screen pixels to world pixels correctly.
-				const zoom = this.#scene.cameras.main.zoom || 1;
-				this.#scene.cameras.main.setScroll(camStart.x - dx / zoom, camStart.y - dy / zoom);
-			}
-		});
-
-		this.#scene.input.on('pointerup', (pointer) => {
-			// Treat as click
-			if (!isDragging) {
-				const hex = Hex.Grid.pointToHex({ x: pointer.worldX, y: pointer.worldY });
-				if (Hex.isHex(hex)) {
-					currentGame.events.emit('hex-clicked', { hex });
-				}
-			}
-			// Reset drag state
-			isDragging = false;
-		});
-
-		this.enableKeyboardInput();
+  constructor(scene) {
+    if (!(scene instanceof globalThis.Phaser.Scene)) {
+      throw new Error("InputManager requires a Phaser.Scene instance");
     }
 
-    destroy() {
-        // Clean up listeners when the scene stops
+    this.#scene = scene;
+    this.#sceneKey = scene.scene.key;
+    this.#shiftKey = scene.input.keyboard.addKey(
+      globalThis.Phaser.Input.Keyboard.KeyCodes.SHIFT
+    );
+
+    this.#setupSceneListeners();
+  }
+
+  #setupSceneListeners() {
+    switch (this.#sceneKey) {
+      case "mainGameScene":
+        this.#setupMainGameListeners();
+        break;
+      case "city-view":
+        this.#setupCityViewListeners();
+        break;
+      case "tile-view":
+        this.#setupTileViewListeners();
+        break;
+      case "settings":
+        this.#setupSettingsListeners();
+        break;
+      default:
+        console.warn(`No input configuration for scene: ${this.#sceneKey}`);
     }
+  }
+
+  #setupMainGameListeners() {
+    this.#preventContextMenu();
+    this.#setupKeyboardListeners();
+    this.#setupPointerListeners();
+    this.enableKeyboardInput();
+  }
+
+  #setupCityViewListeners() {
+    this.#keydownHandler = (evt) => {
+      if (evt.key === "Escape") {
+        currentGame.events.emit("input:close-city-view");
+        this.#scene.scene.stop("city-view");
+      }
+    };
+    this.#scene.input.keyboard.on("keydown", this.#keydownHandler);
+  }
+
+  #setupTileViewListeners() {
+    this.#preventContextMenu("#tile-view");
+
+    this.#keydownHandler = (evt) => {
+      if (evt.key === "Escape") {
+        currentGame.events.emit("input:close-tile-view");
+        this.#scene.scene.stop("tile-view");
+      }
+    };
+    this.#scene.input.keyboard.on("keydown", this.#keydownHandler);
+    this.enableKeyboardInput();
+  }
+
+  #setupSettingsListeners() {
+    this.#keydownHandler = (evt) => {
+      if (evt.key === "Escape") {
+        currentGame.events.emit("input:close-settings");
+      }
+    };
+    this.#scene.input.keyboard.on("keydown", this.#keydownHandler);
+  }
+
+  #preventContextMenu(selector = null) {
+    const target = selector
+      ? document.querySelector(selector)
+      : currentGame.domContainer;
+    if (target) {
+      target.addEventListener("contextmenu", (e) => e.preventDefault());
+    }
+
+    if (this.#scene.input?.manager?.canvas) {
+      this.#scene.input.manager.canvas.addEventListener("contextmenu", (e) =>
+        e.preventDefault()
+      );
+    }
+  }
+
+  #setupKeyboardListeners() {
+    this.#keydownHandler = (evt) => {
+      if (
+        evt.ctrlKey &&
+        ["r", "R", "1", "2", "3", "4", "5", "6", "7", "8", "9", "I"].includes(
+          evt.key
+        )
+      ) {
+        return;
+      }
+
+      evt.preventDefault();
+
+      const shortcuts = {
+        ...KEYBOARD_SHORTCUTS.global,
+        ...KEYBOARD_SHORTCUTS.mainGame,
+      };
+      const shortcut = shortcuts[evt.key];
+
+      if (!shortcut) return;
+
+      if (shortcut.movement) {
+        this.#handleMovementKey(evt.key);
+      } else {
+        this.#handleActionKey(shortcut.action);
+      }
+    };
+
+    this.#scene.input.keyboard.on("keydown", this.#keydownHandler);
+  }
+
+  #handleMovementKey(key) {
+    if (!Unit.isMovableUnit(currentGame.activeUnit)) return;
+    currentGame.events.emit("input:unit-move", {
+      direction: key,
+      unit: currentGame.activeUnit,
+    });
+    currentGame.activeUnit.doAction(key);
+  }
+
+  #handleActionKey(action) {
+    switch (action) {
+      case "escape":
+        this.#handleEscape();
+        break;
+      case "open-settings":
+        this.#openSettings();
+        break;
+      case "unit-wait":
+        currentGame.events.emit("input:unit-wait");
+        currentGame.events.emit("key-pressed", "wait");
+        break;
+      case "unit-skip":
+        currentGame.events.emit("input:unit-skip");
+        currentGame.events.emit("key-pressed", "skip");
+        break;
+      case "build-farm":
+        currentGame.events.emit("input:build-farm");
+        currentGame.events.emit("key-pressed", "build-farm");
+        break;
+      case "clear-claims":
+        currentGame.events.emit("input:clear-claims");
+        currentGame.graphics.gfxClaims?.destroy();
+        break;
+      case "show-claims":
+        currentGame.events.emit("input:show-claims");
+        this.#showTerritorialClaims();
+        break;
+      default:
+        currentGame.events.emit(`input:${action}`);
+    }
+  }
+
+  #handleEscape() {
+    const tileMenu = document.getElementById("tile-menu");
+    const tileView = document.getElementById("tile-view");
+
+    if (tileMenu && !tileMenu.hidden) {
+      currentGame.events.emit("input:close-menu", { menu: "tile-menu" });
+      currentGame.events.emit("esc-pressed");
+    } else if (tileView && !tileView.hidden) {
+      currentGame.events.emit("input:close-menu", { menu: "tile-view" });
+      currentGame.events.emit("esc-pressed");
+    } else {
+      currentGame.events.emit("input:open-settings");
+      this.#openSettings();
+    }
+  }
+
+  #openSettings() {
+    if (this.#sceneKey === "mainGameScene") {
+      const settingsScene = this.#scene.scene.get("settings");
+      if (settingsScene) {
+        this.#scene.scene.launch("settings", { returnScene: "mainGameScene" });
+        this.#scene.scene.pause();
+      } else {
+        console.warn("Settings scene not found");
+      }
+    }
+  }
+
+  #showTerritorialClaims() {
+    const graphics = (currentGame.graphics.gfxClaims = this.#scene.add
+      .graphics({ x: 0, y: 0 })
+      .setDepth(GameConfig.depths.territoryLines - 1));
+
+    Hex.Grid.forEach((hex) => {
+      if (!Tile.isTile(hex.tile)) return;
+      if (!(hex.tile.claims() instanceof Map)) return;
+
+      hex.tile.claims().forEach((intClaim, player) => {
+        if (hex.tile.player === player) return;
+        graphics.lineStyle(3, player.color);
+        graphics.beginPath();
+
+        const [firstCorner, ...otherCorners] = hex.corners.map((point) =>
+          GameConfig.lineShift(point, hex, 0.9)
+        );
+        graphics.moveTo(firstCorner.x, firstCorner.y);
+        otherCorners.forEach(({ x, y }) => {
+          graphics.lineTo(x, y);
+        });
+
+        graphics.closePath();
+        graphics.strokePath();
+      });
+    });
+  }
+
+  #setupPointerListeners() {
+    const getBaseDragThreshold = () =>
+      settingsManager.get("dragThreshold") || 4;
+
+    this.#pointerHandlers.down = (pointer) => {
+      this.#dragStart.x = pointer.x;
+      this.#dragStart.y = pointer.y;
+      this.#camStart.x = this.#scene.cameras.main.scrollX;
+      this.#camStart.y = this.#scene.cameras.main.scrollY;
+      this.#isDragging = false;
+
+      const baseThreshold = getBaseDragThreshold();
+      let dragThreshold;
+
+      switch (pointer.pointerType) {
+        case "touch":
+          dragThreshold = baseThreshold * 2.5;
+          break;
+        case "pen":
+          dragThreshold = baseThreshold * 2.0;
+          break;
+        case "mouse":
+        default:
+          dragThreshold = baseThreshold;
+      }
+
+      pointer.customDragThreshold = dragThreshold;
+    };
+
+    this.#pointerHandlers.move = (pointer) => {
+      if (!pointer.isDown) return;
+
+      const dx = pointer.x - this.#dragStart.x;
+      const dy = pointer.y - this.#dragStart.y;
+      const dragThreshold =
+        pointer.customDragThreshold || getBaseDragThreshold();
+
+      if (
+        !this.#isDragging &&
+        (Math.abs(dx) > dragThreshold || Math.abs(dy) > dragThreshold)
+      ) {
+        this.#isDragging = true;
+        currentGame.events.emit("input:drag-start", {
+          x: pointer.x,
+          y: pointer.y,
+        });
+      }
+
+      if (this.#isDragging) {
+        const zoom = this.#scene.cameras.main.zoom || 1;
+        this.#scene.cameras.main.setScroll(
+          this.#camStart.x - dx / zoom,
+          this.#camStart.y - dy / zoom
+        );
+        currentGame.events.emit("input:drag-move", { dx, dy });
+      }
+    };
+
+    this.#pointerHandlers.up = (pointer) => {
+      if (!this.#isDragging) {
+        const hex = Hex.Grid.pointToHex({
+          x: pointer.worldX,
+          y: pointer.worldY,
+        });
+        if (Hex.isHex(hex)) {
+          currentGame.events.emit("input:hex-click", { hex, pointer });
+          currentGame.events.emit("hex-clicked", { hex });
+        }
+      } else {
+        currentGame.events.emit("input:drag-end", {
+          x: pointer.x,
+          y: pointer.y,
+        });
+      }
+
+      this.#isDragging = false;
+    };
+
+    this.#scene.input.on("pointerdown", this.#pointerHandlers.down);
+    this.#scene.input.on("pointermove", this.#pointerHandlers.move);
+    this.#scene.input.on("pointerup", this.#pointerHandlers.up);
+  }
+
+  update() {
+    if (this.#sceneKey === "mainGameScene" && this.#cursors) {
+      const cam = this.#scene.cameras.main;
+      const speed = this.#shiftKey.isDown ? 25 : 5;
+
+      if (this.#cursors.left.isDown) {
+        cam.scrollX -= speed;
+      } else if (this.#cursors.right.isDown) {
+        cam.scrollX += speed;
+      }
+
+      if (this.#cursors.up.isDown) {
+        cam.scrollY -= speed;
+      } else if (this.#cursors.down.isDown) {
+        cam.scrollY += speed;
+      }
+    }
+  }
+
+  enableKeyboardInput() {
+    const kbd = this.#scene.input?.keyboard;
+    if (typeof (kbd ?? false) !== "object") return;
+
+    kbd.enabled = true;
+
+    if (this.#sceneKey === "mainGameScene") {
+      this.#cursors = kbd.createCursorKeys();
+    }
+  }
+
+  disableKeyboardInput() {
+    const kbd = this.#scene.input?.keyboard;
+    if (typeof (kbd ?? false) !== "object") return;
+
+    kbd.enabled = false;
+    kbd.removeCapture("SPACE");
+    kbd.removeCapture("UP");
+    kbd.removeCapture("DOWN");
+    kbd.removeCapture("LEFT");
+    kbd.removeCapture("RIGHT");
+  }
+
+  destroy() {
+    if (this.#keydownHandler) {
+      this.#scene.input.keyboard.off("keydown", this.#keydownHandler);
+    }
+
+    if (this.#pointerHandlers.down) {
+      this.#scene.input.off("pointerdown", this.#pointerHandlers.down);
+      this.#scene.input.off("pointermove", this.#pointerHandlers.move);
+      this.#scene.input.off("pointerup", this.#pointerHandlers.up);
+    }
+
+    this.#keydownHandler = null;
+    this.#pointerHandlers = {};
+  }
+
+  static getShortcuts(sceneKey = null) {
+    if (sceneKey) {
+      return {
+        ...KEYBOARD_SHORTCUTS.global,
+        ...(KEYBOARD_SHORTCUTS[sceneKey] || {}),
+      };
+    }
+    return KEYBOARD_SHORTCUTS;
+  }
+
+  static getAllShortcuts() {
+    const all = {};
+    Object.entries(KEYBOARD_SHORTCUTS).forEach(([scene, shortcuts]) => {
+      Object.entries(shortcuts).forEach(([key, config]) => {
+        if (!all[scene]) all[scene] = [];
+        all[scene].push({ key, ...config });
+      });
+    });
+    return all;
+  }
 }
+
+export { KEYBOARD_SHORTCUTS };

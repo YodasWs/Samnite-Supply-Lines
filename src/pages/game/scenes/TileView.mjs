@@ -39,14 +39,14 @@ export default {
     Object.keys(World.laborers).forEach((laborerType) => {
       this.load.image(
         `laborers.${laborerType}`,
-        `img/laborers/${laborerType}.png`
+        `img/laborers/${laborerType}.png`,
       );
     });
     Object.entries(World.improvements).forEach(([key, improvement]) => {
       if (typeof improvement.tile === "string" && improvement.tile.length > 0) {
         this.load.image(
           `improvements.${key}`,
-          `img/improvements/${improvement.tile}.png`
+          `img/improvements/${improvement.tile}.png`,
         );
       }
     });
@@ -76,7 +76,7 @@ export default {
         return this.textures.createCanvas(
           "tile-view-improvement",
           GameConfig.tileWidth,
-          GameConfig.tileWidth
+          GameConfig.tileWidth,
         );
       })();
       const elCanvas = canvas.getCanvas();
@@ -89,7 +89,7 @@ export default {
       });
       const oneGrid = new Honeycomb.Grid(
         blandHex,
-        Honeycomb.rectangle({ width: 1, height: 1 })
+        Honeycomb.rectangle({ width: 1, height: 1 }),
       );
       const tileHex = oneGrid.getHex({ row: 0, col: 0 });
 
@@ -99,8 +99,8 @@ export default {
         GameConfig.lineShift(
           { x: point.x, y: point.y - tileHex.y + 100 },
           { x: tileHex.y, y: tileHex.y },
-          0.8
-        )
+          0.8,
+        ),
       );
 
       graphics.moveTo(firstCorner.x, firstCorner.y);

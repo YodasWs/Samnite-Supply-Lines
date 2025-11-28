@@ -105,7 +105,7 @@ class ActionManager {
 
   getAvailableActions(context) {
     return [...ActionRegistry.values()].filter((action) =>
-      action.isValid(context)
+      action.isValid(context),
     );
   }
 

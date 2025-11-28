@@ -1,4 +1,4 @@
-import assert from 'node:assert/strict';
+import assert from "node:assert/strict";
 
 // Expand assert with convenience methods
 assert.false = (val) => assert.equal(val, false);

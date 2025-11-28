@@ -24,7 +24,7 @@ export function isHex(hex) {
 
 export const Grid = new Honeycomb.Grid(
   gameHex,
-  Honeycomb.rectangle({ width: 15, height: 6 })
+  Honeycomb.rectangle({ width: 15, height: 6 }),
 );
 
 export function isValidPath(path, GridInstance = Grid) {

@@ -28,7 +28,7 @@ function FindPath(start, end, movable, Grid) {
   while (openHexes.length > 0) {
     // Sort array by f_cost, then by h_cost for hexes with equal f_cost
     const current = openHexes.sort(
-      (a, b) => a.f_cost - b.f_cost || a.h_cost - b.h_cost
+      (a, b) => a.f_cost - b.f_cost || a.h_cost - b.h_cost,
     )[0];
 
     // Check if finished
@@ -45,7 +45,7 @@ function FindPath(start, end, movable, Grid) {
       Honeycomb.ring({
         center: [current.q, current.r],
         radius: 1,
-      })
+      }),
     ).forEach((neighbor) => {
       // If checked path already
       if (closedHexes.includes(neighbor)) return;

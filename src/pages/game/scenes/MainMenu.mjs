@@ -110,7 +110,7 @@ export default class MainMenu extends Phaser.Scene {
         x - width / 2,
         y - height / 2,
         width,
-        height
+        height,
       );
       text.setInteractive(hitArea, Phaser.Geom.Rectangle.Contains);
 

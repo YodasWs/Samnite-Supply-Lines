@@ -41,7 +41,7 @@ export default class City {
       Honeycomb.spiral({
         start: [this.#hex.q, this.#hex.r],
         radius: 1,
-      })
+      }),
     ).forEach((hex) => {
       hex.tile.claimTerritory(this.#nation, 100);
     });
@@ -50,7 +50,7 @@ export default class City {
       Honeycomb.ring({
         center: [this.#hex.q, this.#hex.r],
         radius: 2,
-      })
+      }),
     ).forEach((hex) => {
       if (hex.terrain.isWater) {
         hex.tile.claimTerritory(this.#nation, 50);
@@ -68,7 +68,7 @@ export default class City {
   set laborers(val) {
     if (!(val instanceof Laborer)) {
       throw new TypeError(
-        "City.laborers expects to be assigned object instance of Laborer!"
+        "City.laborers expects to be assigned object instance of Laborer!",
       );
     }
     this.#laborers.add(val);

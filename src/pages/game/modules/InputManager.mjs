@@ -72,7 +72,7 @@ export default class InputManager {
     this.#scene = scene;
     this.#sceneKey = scene.scene.key;
     this.#shiftKey = scene.input.keyboard.addKey(
-      globalThis.Phaser.Input.Keyboard.KeyCodes.SHIFT
+      globalThis.Phaser.Input.Keyboard.KeyCodes.SHIFT,
     );
 
     this.#setupSceneListeners();
@@ -146,7 +146,7 @@ export default class InputManager {
 
     if (this.#scene.input?.manager?.canvas) {
       this.#scene.input.manager.canvas.addEventListener("contextmenu", (e) =>
-        e.preventDefault()
+        e.preventDefault(),
       );
     }
   }
@@ -156,7 +156,7 @@ export default class InputManager {
       if (
         evt.ctrlKey &&
         ["r", "R", "1", "2", "3", "4", "5", "6", "7", "8", "9", "I"].includes(
-          evt.key
+          evt.key,
         )
       ) {
         return;
@@ -267,7 +267,7 @@ export default class InputManager {
         graphics.beginPath();
 
         const [firstCorner, ...otherCorners] = hex.corners.map((point) =>
-          GameConfig.lineShift(point, hex, 0.9)
+          GameConfig.lineShift(point, hex, 0.9),
         );
         graphics.moveTo(firstCorner.x, firstCorner.y);
         otherCorners.forEach(({ x, y }) => {
@@ -332,7 +332,7 @@ export default class InputManager {
         const zoom = this.#scene.cameras.main.zoom || 1;
         this.#scene.cameras.main.setScroll(
           this.#camStart.x - dx / zoom,
-          this.#camStart.y - dy / zoom
+          this.#camStart.y - dy / zoom,
         );
         currentGame.events.emit("input:drag-move", { dx, dy });
       }

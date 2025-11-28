@@ -53,7 +53,7 @@ export default class TitleScreen extends Phaser.Scene {
         barX + 2,
         barY + 2,
         (barWidth - 4) * progress,
-        barHeight - 4
+        barHeight - 4,
       );
     };
 

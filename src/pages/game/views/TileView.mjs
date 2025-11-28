@@ -1,4 +1,4 @@
-import * as GameConfig from '../modules/Config.mjs';
+import * as GameConfig from "../modules/Config.mjs";
 
 // TODO: Fog-of-war implementation
 // TODO: Display Improvement on the Tile (or do that in ImprovementView.mjs?)
@@ -6,20 +6,21 @@ import * as GameConfig from '../modules/Config.mjs';
 const improvementSprites = new Map(); // key: Tile instance, value: Phaser.Sprite
 
 export function renderImprovement(tile, scene) {
-	const key = tile.improvement?.key;
-	if (!key) return;
+  const key = tile.improvement?.key;
+  if (!key) return;
 
-	if (!improvementSprites.has(tile)) {
-		const sprite = scene.add.image(tile.hex.x, tile.hex.y, `improvements.${key}`)
-			.setDepth(GameConfig.depths.improvement);
-		improvementSprites.set(tile, sprite);
-	}
+  if (!improvementSprites.has(tile)) {
+    const sprite = scene.add
+      .image(tile.hex.x, tile.hex.y, `improvements.${key}`)
+      .setDepth(GameConfig.depths.improvement);
+    improvementSprites.set(tile, sprite);
+  }
 }
 
 export function removeImprovement(tile) {
-	const sprite = improvementSprites.get(tile);
-	if (sprite) {
-		sprite.destroy();
-		improvementSprites.delete(tile);
-	}
+  const sprite = improvementSprites.get(tile);
+  if (sprite) {
+    sprite.destroy();
+    improvementSprites.delete(tile);
+  }
 }

@@ -3,26 +3,26 @@ $header-bg: lightgreen;
 $header-second-color: black;
 
 body > header {
-	color: $header-color;
-	background: $header-bg;
+  color: $header-color;
+  background: $header-bg;
 
-	h1 {
-		margin: 0;
-	}
+  h1 {
+    margin: 0;
+  }
 
-	h2 {
-		color: $header-second-color;
-	}
+  h2 {
+    color: $header-second-color;
+  }
 }
 
 body > nav:not([hidden]) {
-	display: flex;
-	flex-flow: row wrap;
-	justify-content: space-between;
-	align-content: flex-start;
-	align-items: flex-start;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  align-content: flex-start;
+  align-items: flex-start;
 
-	> *:not([hidden]) {
-		display: block;
-	}
+  > *:not([hidden]) {
+    display: block;
+  }
 }

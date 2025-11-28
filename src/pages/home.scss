@@ -1,18 +1,18 @@
 body:has([y-page="home"]) {
-	display: flex;
-	flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 [y-page="home"] {
-	display: flex;
-	flex-direction: column;
-	flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 
-	> h2 + h3 {
-		margin-top: 1em;
-	}
+  > h2 + h3 {
+    margin-top: 1em;
+  }
 
-	> p:last-of-type {
-		flex-grow: 1;
-	}
+  > p:last-of-type {
+    flex-grow: 1;
+  }
 }

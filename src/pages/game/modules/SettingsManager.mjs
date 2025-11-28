@@ -55,7 +55,7 @@ class SettingsManager {
 
         if (parsed._version !== SCHEMA_VERSION) {
           console.warn(
-            `Settings schema outdated (v${parsed._version}). Migrating to v${SCHEMA_VERSION}`
+            `Settings schema outdated (v${parsed._version}). Migrating to v${SCHEMA_VERSION}`,
           );
           this.#settings = this.#migrateSchema(parsed);
         } else {
@@ -263,12 +263,12 @@ export function saveGame(gameState) {
     localStorage.setItem(`${STORAGE_PREFIX}savegame`, serialized);
 
     const existingBackup = localStorage.getItem(
-      `${STORAGE_PREFIX}savegame_backup`
+      `${STORAGE_PREFIX}savegame_backup`,
     );
     if (existingBackup) {
       localStorage.setItem(
         `${STORAGE_PREFIX}savegame_backup_old`,
-        existingBackup
+        existingBackup,
       );
     }
     localStorage.setItem(`${STORAGE_PREFIX}savegame_backup`, serialized);
@@ -289,7 +289,7 @@ export function loadGame() {
 
     if (saveData.version !== SCHEMA_VERSION) {
       console.warn(
-        `Save game version mismatch: ${saveData.version} vs ${SCHEMA_VERSION}`
+        `Save game version mismatch: ${saveData.version} vs ${SCHEMA_VERSION}`,
       );
       return loadBackupGame();
     }

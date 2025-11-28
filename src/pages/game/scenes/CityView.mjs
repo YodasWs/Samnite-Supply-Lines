@@ -122,7 +122,7 @@ export default {
       Honeycomb.spiral({
         start: [data.hex.q, data.hex.r],
         radius: 2,
-      })
+      }),
     ).forEach((hex) => {
       // Display city hexes
       // TODO: Basic rendering each hex should be done in one function and then called here and by the global world map. Only further tile details not shown on world map should be added here
@@ -161,7 +161,7 @@ export default {
               stroke: "black",
               strokeThickness: 7,
               fixedWidth,
-            }
+            },
           )
           .setDepth(3);
       }

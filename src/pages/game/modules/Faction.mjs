@@ -85,7 +85,7 @@ export default class Faction {
   set money(val) {
     if (!Number.isFinite(val) || val < 0) {
       throw new TypeError(
-        "Faction.money expects to be assigned a positive number!"
+        "Faction.money expects to be assigned a positive number!",
       );
     }
     this.#money = val;
@@ -114,7 +114,7 @@ export default class Faction {
       new Unit(unitType, {
         hex,
         faction: this,
-      })
+      }),
     );
   }
 

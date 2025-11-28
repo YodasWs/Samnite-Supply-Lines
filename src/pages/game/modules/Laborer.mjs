@@ -101,7 +101,7 @@ export default class Laborer {
   set tile(val) {
     if (!Tile.isTile(val)) {
       throw new TypeError(
-        "Laborer.tile expects to be assigned object instance of Tile!"
+        "Laborer.tile expects to be assigned object instance of Tile!",
       );
     }
     this.#tile = val;
@@ -114,7 +114,7 @@ export default class Laborer {
   assignTile(tile) {
     if (!Tile.isTile(tile)) {
       throw new TypeError(
-        "Laborer.assignTile expects to be passed object instance of Tile!"
+        "Laborer.assignTile expects to be passed object instance of Tile!",
       );
     }
     this.tile = tile;

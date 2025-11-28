@@ -88,7 +88,7 @@ export const currentGame = {
           Honeycomb.spiral({
             start: [hex.q, hex.r],
             radius: 2,
-          })
+          }),
         ).forEach((hex) => {});
       }
     });
@@ -122,7 +122,7 @@ export const currentGame = {
       offsetY = 0,
       fill = false,
       lineWidth = 5,
-    } = {}
+    } = {},
   ) {
     (Hex.isHex(thisHex) ? [thisHex] : Hex.Grid).forEach((hex) => {
       if (!Tile.isTile(hex.tile) || !(hex.tile.faction instanceof Faction))
@@ -135,7 +135,7 @@ export const currentGame = {
       graphics.beginPath();
       // Draw points closer to center of hex
       const [firstCorner, ...otherCorners] = hex.corners.map((point) =>
-        GameConfig.lineShift(point, hex, lineOffset)
+        GameConfig.lineShift(point, hex, lineOffset),
       );
       graphics.moveTo(firstCorner.x + offsetX, firstCorner.y + offsetY);
       otherCorners.forEach(({ x, y }) => {
@@ -182,7 +182,7 @@ export const currentGame = {
       ) {
         const neededFood = Math.max(
           0,
-          hex.tile.laborers.size * Laborer.FOOD_CONSUMPTION - hex.tile.food
+          hex.tile.laborers.size * Laborer.FOOD_CONSUMPTION - hex.tile.food,
         );
         const takeFood = Math.min(neededFood, food);
         GoodsItem.num = food -= takeFood;

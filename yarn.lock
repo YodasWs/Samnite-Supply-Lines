@@ -1705,9 +1705,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@yodasws/empires-4x@workspace:.":
+"@yodasws/RomanLogisticsTycoon@workspace:.":
   version: 0.0.0-use.local
-  resolution: "@yodasws/empires-4x@workspace:."
+  resolution: "@yodasws/RomanLogisticsTycoon@workspace:."
   dependencies:
     "@babel/core": "npm:^7.20.2"
     "@babel/preset-env": "npm:^7.20.2"

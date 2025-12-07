@@ -6,6 +6,7 @@ import * as GameConfig from './Config.mjs';
 import City from './City.mjs';
 import Goods from './Goods.mjs';
 import Movable from './Movable.mjs';
+import { FogOfWar } from '../views/TileView.mjs';
 import Unit from './Unit.mjs';
 
 class gameHex extends Honeycomb.defineHex({
@@ -41,6 +42,7 @@ export function isValidPath(path, GridInstance = Grid) {
 export function IsLegalMove(targetHex, movable) {
 	if (!isHex(targetHex)) return false;
 	if (!Movable.isInstanceofMovable(movable)) return false;
+	if (!FogOfWar.isHexExplored(movable.faction, targetHex)) return false;
 
 	if (Unit.isUnit(movable)) {
 		// TODO: Check move into City

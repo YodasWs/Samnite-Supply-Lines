@@ -6,7 +6,9 @@ import * as GameConfig from '../modules/Config.mjs';
 import * as Honeycomb from 'honeycomb-grid';
 import * as Hex from '../modules/Hex.mjs';
 import { currentGame } from '../modules/Game.mjs';
+import Faction from '../modules/Faction.mjs';
 import Movable from '../modules/Movable.mjs';
+import { FogOfWar } from '../views/TileView.mjs';
 
 // Minimal mockHex compatible with Hex.Grid
 class mockHex extends Honeycomb.defineHex({
@@ -39,8 +41,10 @@ class mockHex extends Honeycomb.defineHex({
 
 describe('Goods class', () => {
 	let hex;
+	let faction;
 	beforeEach(() => {
 		hex = new mockHex({ row: 1, col: 1 });
+		faction = new Faction({ index: 0 });
 	});
 
 	it('throws on invalid hex', (t) => {
@@ -76,13 +80,16 @@ describe('Goods class', () => {
 	it('does not destroy itself on goods-moved event if it did not reach destination', async (t) => {
 		const testGrid = new Honeycomb.Grid(mockHex, Honeycomb.rectangle({ width: 3, height: 1 }));
 		const targetHex = testGrid.getHex({ row: 0, col: 2 });
-		const goods = new Goods('food', { hex: testGrid.getHex({ row: 0, col: 0 }) });
+		const startHex = testGrid.getHex({ row: 0, col: 0 });
+		startHex.tile.faction = faction;
+		const goods = new Goods('food', { hex: startHex });
+		testGrid.forEach((hex) => FogOfWar.exploreTileForFaction(faction, hex));
 
 		const spy = t.mock.fn();
 		t.mock.method(goods, 'destroy', spy);
 
 		assert.notEqual(goods.setPath(targetHex, testGrid), null);
-		goods.prepareForNewTurn();
+		goods.prepareForNewTurn(testGrid);
 		goods.moveOneTurn();
 
 		const promise = Promise.resolve();
@@ -95,7 +102,10 @@ describe('Goods class', () => {
 	it('destroys itself on goods-moved event if it reached destination', async (t) => {
 		const testGrid = new Honeycomb.Grid(mockHex, Honeycomb.rectangle({ width: 3, height: 1 }));
 		const targetHex = testGrid.getHex({ row: 0, col: 1 });
+		const startHex = testGrid.getHex({ row: 0, col: 0 });
+		startHex.tile.faction = faction;
 		const goods = new Goods('food', { hex: testGrid.getHex({ row: 0, col: 0 }) });
+		testGrid.forEach((hex) => FogOfWar.exploreTileForFaction(faction, hex));
 
 		let destroyed = false;
 		goods.destroy = () => {
@@ -103,7 +113,7 @@ describe('Goods class', () => {
 		};
 
 		assert.notEqual(goods.setPath(targetHex, testGrid), null);
-		goods.prepareForNewTurn();
+		goods.prepareForNewTurn(testGrid);
 		goods.moveOneTurn();
 
 		const promise = Promise.resolve();
@@ -203,12 +213,14 @@ describe('Goods class', () => {
 
 describe('Food production and delivery', () => {
 	let testGrid;
+	let faction;
 	beforeEach(() => {
 		// Inject a small test grid
 		testGrid = new Honeycomb.Grid(mockHex, Honeycomb.spiral({
 			start: { row: 0, col: 0 },
 			radius: 2,
 		}));
+		faction = new Faction({ index: 0 });
 	});
 
 	test('Farm produces food goods each turn', (t) => {
@@ -238,11 +250,13 @@ describe('Food production and delivery', () => {
 	test('Food spoils before reaching City', async (t) => {
 		testGrid = new Honeycomb.Grid(mockHex, Honeycomb.rectangle({ width: 8, height: 1 }));
 		const startHex = testGrid.getHex({ row: 0, col: 0 });
+		startHex.tile.faction = faction;
 		const endHex = testGrid.getHex({ row: 0, col: 7 });
 		const goods = new Goods('food', { hex: startHex, num: 3 });
+		testGrid.forEach((hex) => FogOfWar.exploreTileForFaction(faction, hex));
 		goods.setPath(endHex, testGrid);
 		do {
-			goods.prepareForNewTurn();
+			goods.prepareForNewTurn(testGrid);
 			goods.moveOneTurn();
 			goods.rounds++;
 		} while (goods.rounds < Goods.MaxFoodRounds + 1);

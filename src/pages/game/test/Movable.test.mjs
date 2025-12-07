@@ -8,6 +8,7 @@ import Goods from '../modules/Goods.mjs';
 import Movable from '../modules/Movable.mjs';
 import Faction from '../modules/Faction.mjs';
 import * as Hex from '../modules/Hex.mjs';
+import { FogOfWar } from '../views/TileView.mjs';
 
 // Create mockHex class compatible with Hex.Grid
 class mockHex extends Honeycomb.defineHex({
@@ -22,24 +23,28 @@ class mockHex extends Honeycomb.defineHex({
 			movementCost: 1,
 			isWater: false,
 		};
-		this.tile = { faction: new Faction({ index: 0 }) };
 	}
 }
 
-let testGrid;
-
-beforeEach(() => {
-	// Inject a small test grid
-	testGrid = new Honeycomb.Grid(mockHex, Honeycomb.spiral({
-		start: { row: 0, col: 0 },
-		radius: 3,
-	}));
-});
-
 describe('Movable class', () => {
+	let testGrid;
+	let faction;
+
+	beforeEach(() => {
+		// Inject a small test grid
+		testGrid = new Honeycomb.Grid(mockHex, Honeycomb.spiral({
+			start: { row: 0, col: 0 },
+			radius: 3,
+		}));
+		faction = new Faction({ index: 0 });
+		testGrid.forEach((hex) => {
+			hex.tile = { faction };
+			FogOfWar.exploreTileForFaction(faction, hex);
+		});
+	});
+
 	it('constructs with valid hex and faction', () => {
 		const hex = testGrid.getHex({ row: 1, col: 1 });
-		const faction = new Faction({ index: 0 });
 		const movable = new Movable({ hex, faction });
 		assert.equal(movable.row, 1);
 		assert.equal(movable.col, 1);
@@ -47,7 +52,6 @@ describe('Movable class', () => {
 	});
 
 	it('throws on invalid hex', () => {
-		const faction = new Faction({ index: 0 });
 		assert.throws(() => new Movable({ hex: {}, faction }), {
 			name: 'TypeError',
 			message: 'Movable expects to be assigned a Hex!',
@@ -56,16 +60,14 @@ describe('Movable class', () => {
 
 	test('prepareForNewTurn sets movement points', () => {
 		const hex = testGrid.getHex({ row: 1, col: 1 });
-		const faction = new Faction({ index: 0 });
 		const movable = new Movable({ hex, faction });
-		movable.prepareForNewTurn();
+		movable.prepareForNewTurn(testGrid);
 		assert.equal(movable.moves, movable.baseMovementPoints);
 	});
 
 	test('setPath to adjacent hex returns valid iterator', () => {
 		const start = testGrid.getHex({ row: 1, col: 1 });
 		const end = testGrid.getHex({ row: 1, col: 2 });
-		const faction = new Faction({ index: 0 });
 		const movable = new Movable({ hex: start, faction });
 		const iterator = movable.setPath(end, testGrid);
 		assert.ok(iterator);
@@ -74,9 +76,8 @@ describe('Movable class', () => {
 	test('moveOneStep updates position and reduces moves', () => {
 		const start = testGrid.getHex({ row: 1, col: 1 });
 		const end = testGrid.getHex({ row: 1, col: 2 });
-		const faction = new Faction({ index: 0 });
 		const movable = new Movable({ hex: start, faction });
-		movable.prepareForNewTurn();
+		movable.prepareForNewTurn(testGrid);
 		movable.setPath(end, testGrid);
 		movable.moveOneStep();
 		assert.equal(movable.row, end.row);
@@ -87,7 +88,6 @@ describe('Movable class', () => {
 	test('moveOneTurn updates position and reduces moves', () => {
 		const start = testGrid.getHex({ row: 0, col: 0 });
 		const end = testGrid.getHex({ row: 0, col: 2 });
-		const faction = new Faction({ index: 0 });
 		const movable = new Movable({
 			hex: start,
 			faction,
@@ -98,7 +98,7 @@ describe('Movable class', () => {
 				},
 			},
 		});
-		movable.prepareForNewTurn();
+		movable.prepareForNewTurn(testGrid);
 		movable.setPath(end, testGrid);
 		movable.moveOneTurn();
 		assert.equal(movable.row, end.row);
@@ -110,7 +110,7 @@ describe('Movable class', () => {
 		const movable = new Movable({
 			hex: testGrid.getHex({ row: 0, col: 0 }),
 		});
-		movable.prepareForNewTurn();
+		movable.prepareForNewTurn(testGrid);
 		movable.activate();
 		const targetHex = testGrid.getHex({ row: 1, col: 0 });
 		movable.setPath(targetHex, testGrid);
@@ -129,7 +129,7 @@ describe('Movable class', () => {
 		assert.notEqual(moveIterable, null);
 		for (let i = 0; i < 10; i++) {
 			if (moveIterable.done === true) break;
-			movable.prepareForNewTurn();
+			movable.prepareForNewTurn(testGrid);
 			movable.activate();
 			movable.moveOneTurn();
 		}
@@ -139,18 +139,16 @@ describe('Movable class', () => {
 
 	test('deactivate sets moves to zero', () => {
 		const hex = testGrid.getHex({ row: 1, col: 1 });
-		const faction = new Faction({ index: 0 });
 		const movable = new Movable({ hex, faction });
-		movable.prepareForNewTurn();
+		movable.prepareForNewTurn(testGrid);
 		movable.deactivate(true);
 		assert.equal(movable.moves, 0);
 	});
 
 	test('destroy resets state and marks deleted', () => {
 		const hex = testGrid.getHex({ row: 1, col: 1 });
-		const faction = new Faction({ index: 0 });
 		const movable = new Movable({ hex, faction });
-		movable.prepareForNewTurn();
+		movable.prepareForNewTurn(testGrid);
 		movable.destroy();
 		assert.equal(movable.moves, 0);
 		assert.equal(movable.deleted, true);
@@ -159,7 +157,6 @@ describe('Movable class', () => {
 	test('setPath returns null if no path found', () => {
 		const start = testGrid.getHex({ row: 1, col: 1 });
 		const end = new mockHex({ row: 99, col: 99 }); // not in grid
-		const faction = new Faction({ index: 0 });
 		const movable = new Movable({ hex: start, faction });
 		const result = movable.setPath(end, testGrid);
 		assert.equal(result, null);

@@ -8,6 +8,7 @@ import Faction from '../modules/Faction.mjs';
 import Movable from '../modules/Movable.mjs';
 import * as Hex from '../modules/Hex.mjs';
 import { currentGame } from '../modules/Game.mjs';
+import { FogOfWar } from '../views/TileView.mjs';
 
 // Minimal mockHex compatible with Hex.Grid
 class mockHex extends Honeycomb.defineHex({
@@ -22,7 +23,6 @@ class mockHex extends Honeycomb.defineHex({
 			movementCost: 1,
 			isWater: false,
 		};
-		this.tile = { faction: new Faction({ index: 0 }) };
 		this.f_cost = 0;
 		this.g_cost = 0;
 		this.h_cost = 0;
@@ -36,6 +36,10 @@ let faction;
 beforeEach(() => {
 	testGrid = new Honeycomb.Grid(mockHex, Honeycomb.rectangle({ width: 3, height: 3 }));
 	faction = new Faction({ index: 0 });
+	testGrid.forEach((hex) => {
+		hex.tile = { faction };
+		FogOfWar.exploreTileForFaction(faction, hex);
+	});
 });
 
 describe('Unit class', () => {
@@ -220,7 +224,7 @@ describe('Unit class', () => {
 		const newCol = col;
 		const unit = new Unit('farmer', {
 			hex: testGrid.getHex({ row, col }),
-			faction: new Faction({ index: 0 }),
+			faction,
 		});
 		unit.prepareForNewTurn();
 		unit.setPath(testGrid.getHex({
@@ -240,7 +244,7 @@ describe('Unit class', () => {
 		}));
 		const unit = new Unit('farmer', {
 			hex: testGrid.getHex({ row, col }),
-			faction: new Faction({ index: 0 }),
+			faction,
 		});
 		const expected = {
 			u: testGrid.getHex({ row: row - 1, col: col - 1 }),

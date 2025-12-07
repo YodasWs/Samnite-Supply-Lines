@@ -24,7 +24,7 @@ export class FogOfWar {
 		const factionFogMap = fogOfWarMaps.get(faction);
 		factionFogMap.set(hex, 'unexplored');
 		if (faction.index === 0) {
-			hex.sprite.setTint(fogOfWarTints[factionFogMap.get(hex)])
+			hex.sprite?.setTint(fogOfWarTints[factionFogMap.get(hex)])
 				.setDepth(GameConfig.depths.unexplored);
 		}
 	}
@@ -42,7 +42,7 @@ export class FogOfWar {
 		const factionFogMap = fogOfWarMaps.get(faction);
 		factionFogMap.set(hex, 'explored');
 		if (faction.index === 0) {
-			hex.sprite.setTint(fogOfWarTints[factionFogMap.get(hex)])
+			hex.sprite?.setTint(fogOfWarTints[factionFogMap.get(hex)])
 				.setDepth(GameConfig.depths.map)
 				.setInteractive(
 					new Phaser.Geom.Polygon(hex.corners),
@@ -65,7 +65,7 @@ export class FogOfWar {
 		const factionFogMap = fogOfWarMaps.get(faction);
 		factionFogMap.set(hex, 'visible');
 		if (faction.index === 0) {
-			hex.sprite.setTint(fogOfWarTints[factionFogMap.get(hex)])
+			hex.sprite?.setTint(fogOfWarTints[factionFogMap.get(hex)])
 				.setDepth(GameConfig.depths.map)
 				.setInteractive(
 					new Phaser.Geom.Polygon(hex.corners),
@@ -109,6 +109,9 @@ export class FogOfWar {
 }
 
 export function setTileVisibility(Grid = Hex.Grid) {
+	Grid.forEach((hex) => {
+		if (hex.tile.faction === currentGame.players[0]) FogOfWar.viewTileForFaction(currentGame.players[0], hex);
+	});
 	currentGame.players[0].units.forEach((unit) => {
 		if (unit.deleted) return;
 		Grid.traverse(Honeycomb.spiral({

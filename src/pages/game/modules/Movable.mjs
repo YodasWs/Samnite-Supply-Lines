@@ -185,8 +185,12 @@ export default class Movable {
 		this.#moveIterator = null;
 	}
 
-	prepareForNewTurn() {
+	prepareForNewTurn(Grid = Hex.Grid) {
 		this.#moves = this.#base.movementPoints;
+		// Recalculate best path at the start of each turn
+		if (this.#path.length > 1) {
+			this.setPath(this.#path[this.#path.length - 1], Grid);
+		}
 	}
 
 	setPath(targetHex, Grid = Hex.Grid) {

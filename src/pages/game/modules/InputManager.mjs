@@ -108,6 +108,18 @@ export default class InputManager {
 			e.preventDefault();
 		});
 
+		document.querySelector('#zoom')?.addEventListener('contextmenu', (e) => {
+			e.preventDefault();
+		});
+		document.querySelector('#zoom-in')?.addEventListener('click', (e) => {
+			if (e.currentTarget.disabled) return;
+			currentGame.events.emit('zoom-in');
+		});
+		document.querySelector('#zoom-out')?.addEventListener('click', (e) => {
+			if (e.currentTarget.disabled) return;
+			currentGame.events.emit('zoom-out');
+		});
+
 		this.#scene.input.keyboard.on('keydown', (evt) => {
 			// Ctrl+R, reload; Ctrl+1, change browser tab
 			if (evt.ctrlKey && [
@@ -120,6 +132,34 @@ export default class InputManager {
 
 			evt.preventDefault();
 			switch (evt.key) {
+				case '`':
+					break;
+				case '1':
+					break;
+				case '2':
+					break;
+				case '3':
+					break;
+				case '4':
+					break;
+				case '5':
+					break;
+				case '6':
+					break;
+				case '7':
+					break;
+				case '8':
+					break;
+				case '9':
+					break;
+				case '0':
+					break;
+				case '-':
+					currentGame.events.emit('zoom-out');
+					break;
+				case '=':
+					currentGame.events.emit('zoom-in');
+					break;
 				case 'q':
 					break;
 				case 'w':

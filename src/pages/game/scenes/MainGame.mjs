@@ -17,6 +17,8 @@ const sceneKey = 'mainGameScene';
 
 let MainGameScene = null;
 
+const zoomLevels = [ 0.4, 0.5, 0.7, 1 ];
+
 export const ActionSprites = {
 	spriteOnActiveUnit: null,
 	shortcutKeys: [],
@@ -35,11 +37,48 @@ function hideActionSprites() {
 currentGame.events.on('unit-deactivated', hideActionSprites);
 currentGame.events.on('unit-moving', hideActionSprites);
 
+currentGame.events.on('zoom-in', () => {
+	console.log('zoom-in');
+	const currentZoom = MainGameScene.cameras.main.zoom;
+	let i = zoomLevels.indexOf(currentZoom);
+	if (i < zoomLevels.length - 1) {
+		MainGameScene.cameras.main.zoom = zoomLevels[++i];
+	}
+	if (i >= zoomLevels.length - 1) {
+		const btn = document.querySelector('#zoom-in');
+		if (btn instanceof Element) btn.disabled = true;
+	}
+	if (i > 0) {
+		const btn = document.querySelector('#zoom-out');
+		if (btn instanceof Element) btn.disabled = false;
+	}
+	hideActionSprites();
+	ShowActiveUnitHelpSprites();
+});
+currentGame.events.on('zoom-out', () => {
+	console.log('zoom-out');
+	const currentZoom = MainGameScene.cameras.main.zoom;
+	let i = zoomLevels.indexOf(currentZoom);
+	if (i > 0) {
+		MainGameScene.cameras.main.zoom = zoomLevels[--i];
+	}
+	if (i < zoomLevels.length - 1) {
+		const btn = document.querySelector('#zoom-in');
+		if (btn instanceof Element) btn.disabled = false;
+	}
+	if (i <= 0) {
+		const btn = document.querySelector('#zoom-out');
+		if (btn instanceof Element) btn.disabled = true;
+	}
+	hideActionSprites();
+	ShowActiveUnitHelpSprites();
+});
+
 export function ShowActiveUnitHelpSprites(event) {
 	if (globalThis.Phaser === undefined) {
 		return;
 	}
-	const unit = event.detail.unit;
+	const unit = event?.detail?.unit ?? currentGame.activeUnit;
 
 	const hex = unit.hex;
 	ActionSprites.spriteOnActiveUnit.setActive(true).setVisible(true).setPosition(hex.x, hex.y).setDepth(GameConfig.depths.actionSprites);
@@ -59,14 +98,20 @@ export function ShowActiveUnitHelpSprites(event) {
 		'0.7': {
 			fontSize: 37.5,
 			x: GameConfig.tileWidth / 2,
-			y: GameConfig.tileWidth / 6,
-			strokeThickness: 7,
+			y: 20,
+			strokeThickness: 8,
 		},
 		'0.5': {
 			fontSize: 55,
 			x: GameConfig.tileWidth / 2,
 			y: -10,
 			strokeThickness: 10,
+		},
+		'0.4': {
+			fontSize: 65,
+			x: GameConfig.tileWidth / 2,
+			y: -20,
+			strokeThickness: 15,
 		},
 	}[MainGameScene.cameras.main.zoom.toString()];
 

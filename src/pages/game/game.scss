@@ -17,6 +17,34 @@
 		}
 	}
 
+	#zoom {
+		z-index: 1;
+		bottom: auto;
+		left: auto;
+		top: max(10%, 50px);
+		display: flex;
+		flex-flow: column nowrap;
+
+		> button {
+			cursor: pointer;
+			min-height: 25px;
+			min-width: 25px;
+			font-size: 20px;
+			line-height: 1em;
+			text-align: center;
+			background: lightgrey;
+			color: black;
+			border: 2px outset darkgrey;
+			border-radius: 5px;
+
+			&:disabled {
+				filter: opacity(0.5);
+				cursor: default;
+				border: 2px solid transparent;
+			}
+		}
+	}
+
 	$max-left-menu-width: 0;
 
 	@media (orientation: landscape) {

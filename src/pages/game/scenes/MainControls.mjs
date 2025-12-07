@@ -81,19 +81,16 @@ export default {
 						.setX(14 + uiDisplays.get('round').displayWidth + 10)
 						.setColor(currentGame.currentPlayer.index === 0 ? 'goldenrod' : 'lightgrey');
 					return;
-				case 'round': {
-					if (currentGame.betweenRounds) {
-						uiDisplays.get('faction').setX(14 + uiDisplays.get('round').displayWidth + 10)
-							.setText('End of Round')
-							.setColor('lightgrey');
-						return;
-						if (display.oldValue === currentGame.turn) return;
-						uiDisplays.get('round').setText(`Round ${currentGame.turn}`)
-							.setColor('white');
-						return;
-					}
-				}
 			}
 		});
 	},
 };
+currentGame.events.on('start-round', () => {
+	uiDisplays.get('round').setText(`Round ${currentGame.turn}`)
+		.setColor('white');
+});
+currentGame.events.on('end-round', () => {
+	uiDisplays.get('faction').setX(14 + uiDisplays.get('round').displayWidth + 10)
+		.setText('End of Round')
+		.setColor('lightgrey');
+});

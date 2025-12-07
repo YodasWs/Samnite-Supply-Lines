@@ -94,6 +94,7 @@ export const currentGame = {
 
 		// Start Round
 		this.turn++;
+		this.events.emit('start-round');
 		this.startTurn(0);
 	},
 	startTurn(intPlayer) {
@@ -155,6 +156,7 @@ export const currentGame = {
 	},
 	endRound() {
 		console.log('Sam, endRound!');
+		this.events.emit('end-round');
 		const delaysForEndRound = [];
 		this.betweenRounds = true;
 		// TODO: Check each tile's Food reserves to feed Citizens and Laborers!

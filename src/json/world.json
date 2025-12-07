@@ -4,6 +4,7 @@
 			"key": "move",
 			"label": "Move here",
 			"description": "Move to target location",
+			"icon": "path.png",
 			"showIn": ["tile-menu"],
 			"isValid": "isLegalMove",
 			"execute": "startMoveTo"
@@ -12,14 +13,16 @@
 			"key": "wait",
 			"label": "Wait",
 			"description": "Wait and come back later this turn",
+			"icon": "wait.png",
 			"showIn": ["unit-actions-menu"],
 			"isValid": true,
 			"execute": "wait"
 		},
 		{
 			"key": "skip",
-			"label": "Skip",
-			"description": "Skip this unit's turn",
+			"label": "Stay",
+			"description": "Stay here, done moving",
+			"icon": "skip.png",
 			"showIn": ["unit-actions-menu"],
 			"isValid": true,
 			"execute": "skip"

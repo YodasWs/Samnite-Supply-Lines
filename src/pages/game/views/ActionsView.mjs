@@ -50,6 +50,23 @@ currentGame.events.on('phaser-ready', () => {
 	dom ??= document.getElementById('tile-menu');
 });
 
+function buildActionButton(div, action) {
+	const button = document.createElement('button');
+	if (currentGame.scenes.mainGame.textures.exists(`actions.${action.key}`)) {
+		button.append(currentGame.scenes.mainGame.textures.get(`actions.${action.key}`).getSourceImage());
+	} else {
+		button.innerHTML = action.label;
+	}
+	button.addEventListener('click', () => {
+		action.execute(context);
+	});
+	if (typeof action.description === 'string' && action.description !== '') {
+		button.setAttribute('title', action.description);
+	}
+	button.style.pointerEvents = 'auto';
+	div.appendChild(button);
+}
+
 function OpenUnitActionMenu(evt) {
 	const unit = evt.detail?.unit;
 	if (!Unit.isUnit(unit) || currentGame.activeUnit !== unit) return;
@@ -71,22 +88,7 @@ function OpenUnitActionMenu(evt) {
 		faction,
 	};
 
-	ActionHandler.getAvailableActions(context).forEach((action) => {
-		const button = document.createElement('button');
-		if (currentGame.scenes.mainGame.textures.exists(`actions.${action.key}`)) {
-			button.append(currentGame.scenes.mainGame.textures.get(`actions.${action.key}`).getSourceImage());
-		} else {
-			button.innerHTML = action.label;
-		}
-		button.addEventListener('click', () => {
-			action.execute(context);
-		});
-		if (typeof action.description === 'string' && action.description !== '') {
-			button.setAttribute('title', action.description);
-		}
-		button.style.pointerEvents = 'auto';
-		div.appendChild(button);
-	});
+	ActionHandler.getAvailableActions(context).forEach(buildActionButton.bind(null, div));
 
 	currentGame.domContainer.appendChild(div);
 	currentGame.domContainer.style.zIndex = 1;
@@ -135,18 +137,7 @@ function OpenTileMenu(evt) {
 	}
 
 	// Build menu
-	possibleActions.forEach((action) => {
-		const button = document.createElement('button');
-		button.innerHTML = action.label;
-		button.addEventListener('click', () => {
-			action.execute(context);
-		});
-		if (typeof action.description === 'string' && action.description !== '') {
-			button.setAttribute('title', action.description);
-		}
-		button.style.pointerEvents = 'auto';
-		dom.appendChild(button);
-	});
+	possibleActions.forEach(buildActionButton.bind(null, dom));
 
 	// Add cancel button
 	const cancel = document.createElement('button');

@@ -82,6 +82,7 @@
 			border-radius: 100px;
 			padding: 5px 15px;
 			background: white;
+			border: 0;
 
 			&:not(:disabled) {
 				cursor: pointer;
@@ -95,6 +96,13 @@
 				border-radius: var(--circle);
 				text-align: center;
 				align-self: center;
+				position: relative;
+
+				> img {
+					position: absolute;
+					left: 0;
+					top: 0;
+				}
 			}
 		}
 	}

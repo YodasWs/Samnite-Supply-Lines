@@ -81,9 +81,20 @@
 			font-size: 40px;
 			border-radius: 100px;
 			padding: 5px 15px;
+			background: white;
 
-			&:not([disabled]) {
+			&:not(:disabled) {
 				cursor: pointer;
+			}
+
+			&:has(> img) {
+				--circle: 64px;
+				height: var(--circle);
+				width: var(--circle);
+				padding: 0;
+				border-radius: var(--circle);
+				text-align: center;
+				align-self: center;
 			}
 		}
 	}
@@ -137,7 +148,7 @@
 				}
 			}
 
-			&:not([disabled]) {
+			&:not(:disabled) {
 				cursor: pointer;
 			}
 		}

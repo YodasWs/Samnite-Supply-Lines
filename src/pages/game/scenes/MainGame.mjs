@@ -194,12 +194,16 @@ export default {
 		Object.keys(World.laborers).forEach((laborerType) => {
 			this.load.image(`laborers.${laborerType}`, `img/laborers/${laborerType}.png`);
 		});
-		// Load images for player's action
+		// Load images for player's actions
 		this.load.image('activeUnit', 'img/activeUnit.png');
+		World.actions.forEach((action) => {
+			if (action.icon) this.load.image(`actions.${action.key}`, `img/actions/${action.icon}`);
+		});
 		// Load Unit Images
 		Object.keys(World.units).forEach((unitType) => {
 			this.load.image(`unit.${unitType}`, `img/units/${unitType}.png`);
 		});
+		currentGame.scenes.mainGame = this;
 	},
 	create() {
 		MainGameScene = this;

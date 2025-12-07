@@ -73,7 +73,11 @@ function OpenUnitActionMenu(evt) {
 
 	ActionHandler.getAvailableActions(context).forEach((action) => {
 		const button = document.createElement('button');
-		button.innerHTML = action.label;
+		if (currentGame.scenes.mainGame.textures.exists(`actions.${action.key}`)) {
+			button.append(currentGame.scenes.mainGame.textures.get(`actions.${action.key}`).getSourceImage());
+		} else {
+			button.innerHTML = action.label;
+		}
 		button.addEventListener('click', () => {
 			action.execute(context);
 		});
@@ -161,133 +165,3 @@ function CloseTileMenu(evt) {
 	dom.innerHTML = '';
 }
 currentGame.events.on('esc-pressed', CloseTileMenu);
-
-/*
-function OpenUnitActionMenu(evt) {
-	// TODO: In the future, we don't want to accept the hex, only the Unit
-	const hex = evt.detail?.hex || evt.detail?.unit?.hex;
-	if (!Hex.isHex(hex) || !Tile.isTile(hex.tile)) {
-		// Not valid hex, exit
-		return;
-	}
-
-	// List possible actions on the hex to build menu
-	const possibleActions = [];
-
-	// Check for units on this hex
-	const unitsOnHex = UnitUtils.getUnitsOnHex(hex);
-
-	// If units on this hex, add option to activate each unit
-	if (unitsOnHex.length > 0) {
-		unitsOnHex.forEach(unit => {
-			// Don't show option to activate currently active unit
-			if (unit === currentGame.activeUnit) return;
-
-			// Only show units from current player or if no active unit
-			if (unit.faction === currentGame.currentPlayer || !currentGame.activeUnit) {
-				possibleActions.push({
-					action: 'activateUnit',
-					unit: unit,
-				});
-			}
-		});
-	}
-
-	if (Unit.isUnit(currentGame.activeUnit)) {
-		if (currentGame.activeUnit.hex.row == hex.row && currentGame.activeUnit.hex.col == hex.col) {
-			// Check conditions to add actions based on unit type
-			switch (currentGame.activeUnit.unitType) {
-				case 'settler':
-					// Build city option
-					if (Actions['b'].isValidOption({ hex })) {
-						possibleActions.push('b');
-					}
-					break;
-				case 'farmer':
-					// TODO: Centralize check for hex's overlay
-					[
-						'f',
-					].forEach((action) => {
-						if (Actions[action].isValidOption({ hex })) {
-							possibleActions.push(action);
-						}
-					});
-					break;
-			}
-			// Check if territory is under our control
-			if (Actions['c'].isValidOption({ hex, faction: currentGame.activeUnit.faction })) {
-				possibleActions.push('c');
-			}
-		} else if (Hex.IsLegalMove(hex, currentGame.activeUnit)) {
-			// Offer to move unit here
-			possibleActions.push('moveTo');
-		}
-	}
-
-	// Add option to view city
-	if (Actions['city'].isValidOption({ hex })) {
-		possibleActions.push('city');
-	}
-
-	// TODO: If more units here, add option to view units
-
-	// If clicked on unit's tile, add options to wait and hold
-	if (currentGame.activeUnit.hex.row === hex.row && currentGame.activeUnit.hex.col === hex.col) {
-		possibleActions.push('w', 's');
-	}
-
-	possibleActions.push('tile');
-
-	// No actions, do nothing
-	if (possibleActions.length === 0) {
-		CloseUnitActionMenu();
-		return;
-	}
-
-	// If only one action, do it (but not for activateUnit - always show menu)
-	if (possibleActions.length === 1 && typeof possibleActions[0] === 'object') switch (possibleActions[0].action) {
-		case 'moveTo':
-			// Automatically move to adjacent hex
-			if (Hex.Grid.distance(currentGame.activeUnit.hex, hex) === 1) {
-				currentGame.activeUnit.doAction('moveTo', hex);
-				return;
-			}
-			break;
-		case 'city':
-			DoAction('city', hex);
-			return;
-		case 'tile':
-			DoAction('tile', hex);
-			return;
-	}
-
-	// Show menu with action options
-	currentGame.domContainer.innerHTML = '';
-	const div = document.createElement('div');
-	div.classList.add('menu');
-	possibleActions.concat([
-		'',
-	]).forEach((actionItem) => {
-		const button = document.createElement('button');
-		// Handle both string actions and object actions (for activateUnit)
-		if (actionItem?.action) {
-			const action = Actions[actionItem.action];
-			button.innerHTML = action.text(actionItem);
-			button.addEventListener('click', () => {
-				action.doAction(actionItem);
-			});
-		} else {
-			const action = actionItem;
-			button.innerHTML = Actions[action].text({ hex });
-			button.addEventListener('click', () => {
-				DoAction(action, hex);
-			});
-		}
-		button.style.pointerEvents = 'auto';
-		div.appendChild(button);
-	});
-	div.style.pointerEvents = 'auto';
-	currentGame.domContainer.appendChild(div);
-	currentGame.domContainer.style.zIndex = 1;
-}
-//*/

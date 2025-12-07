@@ -2,6 +2,10 @@
 
 Except where otherwise stated, all images here are Copyright © 2022 Samuel B Grundman, all rights reserved.
 
+## actions
+
+See [separate license](https://github.com/YodasWs/RomanLogisticsTycoon/blob/master/src/img/actions/LICENSE.md).
+
 ## improvements
 
 See [separate license](https://github.com/YodasWs/RomanLogisticsTycoon/blob/master/src/img/improvements/LICENSE.md).

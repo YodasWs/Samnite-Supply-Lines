@@ -4,7 +4,6 @@
 			"key": "move",
 			"label": "Move here",
 			"description": "Move to target location",
-			"icon": "move-to-tile.png",
 			"showIn": ["tile-menu"],
 			"isValid": "isLegalMove",
 			"execute": "startMoveTo"
@@ -13,7 +12,6 @@
 			"key": "wait",
 			"label": "Wait",
 			"description": "Wait and come back later this turn",
-			"icon": "wait.png",
 			"showIn": ["unit-actions-menu"],
 			"isValid": true,
 			"execute": "wait"
@@ -22,7 +20,6 @@
 			"key": "skip",
 			"label": "Skip",
 			"description": "Skip this unit's turn",
-			"icon": "skip.png",
 			"showIn": ["unit-actions-menu"],
 			"isValid": true,
 			"execute": "skip"
@@ -31,7 +28,6 @@
 			"key": "tile",
 			"label": "Information on space",
 			"description": "View information about this tile",
-			"icon": "about-tile.png",
 			"showIn": ["tile-menu"],
 			"isValid": "hexTileValid",
 			"execute": "startTileView"
@@ -40,7 +36,6 @@
 			"key": "city-view",
 			"label": "View City",
 			"description": "View information about this city",
-			"icon": "city-view.png",
 			"showIn": ["tile-menu"],
 			"isValid": "isCityTile",
 			"execute": "startCityView"
@@ -49,7 +44,6 @@
 			"key": "build-farm",
 			"label": "Build Farm",
 			"description": "Construct a farm on this tile. The farmer unit will be consumed and become a laborer to work the farm.",
-			"icon": "farm.png",
 			"unitTypes": [
 				"farmer"
 			],
@@ -65,6 +59,15 @@
 			"showIn": ["unit-actions-menu"],
 			"isValid": "currentPlayerTurn",
 			"execute": "endTurn"
+		},
+		{
+			"key": "center-map",
+			"label": "Center Map",
+			"description": "Center Map",
+			"icon": "center.png",
+			"showIn": ["unit-actions-menu"],
+			"isValid": "currentPlayerTurn",
+			"execute": "centerMap"
 		}
 	],
 	"improvements": {

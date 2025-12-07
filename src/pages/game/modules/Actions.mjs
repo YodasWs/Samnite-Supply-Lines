@@ -110,6 +110,9 @@ const ActionExecutors = {
 		});
 		unit.destroy();
 	},
+	centerMap() {
+		currentGame.events.emit('center-map');
+	},
 	endTurn() {
 		currentGame.events.emit('end-turn');
 	},

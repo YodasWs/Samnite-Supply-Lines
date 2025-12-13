@@ -138,6 +138,8 @@ function OpenTileMenu(evt) {
 		return;
 	}
 
+	currentGame.activeTile = hex;
+
 	// Build menu
 	possibleActions.forEach(buildActionButton.bind(null, dom.tileMenu, context));
 
@@ -155,7 +157,9 @@ function OpenTileMenu(evt) {
 currentGame.events.on('hex-clicked', OpenTileMenu);
 
 function CloseTileMenu(evt) {
+	currentGame.activeTile = null;
 	dom.tileMenu.setAttribute('hidden', true);
 	dom.tileMenu.innerHTML = '';
 }
 currentGame.events.on('esc-pressed', CloseTileMenu);
+currentGame.events.on('center-map', CloseTileMenu);

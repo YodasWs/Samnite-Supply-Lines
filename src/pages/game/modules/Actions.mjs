@@ -166,11 +166,13 @@ export class ActionHandler {
 }
 
 currentGame.events.on('key-pressed', (evt) => {
-	const key = evt.detail;
 	const unit = currentGame.activeUnit;
 	if (!Unit.isUnit(unit)) return;
-	const context = { unit, hex: unit.hex, faction: unit.faction };
-	ActionHandler.handle(key, context);
+	ActionHandler.handle(evt.detail, {
+		unit,
+		hex: currentGame.activeTile ?? unit.hex,
+		faction: unit.faction,
+	});
 });
 
 /*

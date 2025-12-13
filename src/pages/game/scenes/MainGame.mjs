@@ -20,6 +20,7 @@ let MainGameScene = null;
 const zoomLevels = [ 0.4, 0.5, 0.7, 1 ];
 
 export const ActionSprites = {
+	spriteOnActiveTile: null,
 	spriteOnActiveUnit: null,
 	shortcutKeys: [],
 };
@@ -28,14 +29,18 @@ function hideActionSprites() {
 	if (globalThis.Phaser === undefined) {
 		return;
 	}
-	const windowConfig = GameConfig.getWindowConfig();
-	ActionSprites.spriteOnActiveUnit?.setActive(false).setPosition(windowConfig.offscreen, windowConfig.offscreen).setDepth(GameConfig.depths.offscreen);
+	const { offscreen } = GameConfig.getWindowConfig();
+	ActionSprites.spriteOnActiveUnit?.setActive(false).setPosition(offscreen, offscreen).setDepth(GameConfig.depths.offscreen);
 	while (ActionSprites.shortcutKeys.length > 0) {
 		ActionSprites.shortcutKeys.pop().destroy();
 	}
 }
-currentGame.events.on('unit-deactivated', hideActionSprites);
-currentGame.events.on('unit-moving', hideActionSprites);
+function hideAllActionSprites() {
+	hideActionSprites();
+	hideActiveTileSprite();
+}
+currentGame.events.on('unit-deactivated', hideAllActionSprites);
+currentGame.events.on('unit-moving', hideAllActionSprites);
 
 currentGame.events.on('zoom-in', () => {
 	const currentZoom = MainGameScene.cameras.main.zoom;
@@ -144,9 +149,25 @@ export function ShowActiveUnitHelpSprites(event) {
 	});
 }
 currentGame.events.on('unit-activated', (evt) => {
-	hideActionSprites(evt);
+	hideAllActionSprites();
 	ShowActiveUnitHelpSprites(evt);
 });
+
+currentGame.events.on('hex-clicked', (evt) => {
+	// Highlight the clicked tile
+	const hex = evt.detail?.hex || evt.detail?.unit?.hex;
+	if (!Hex.isHex(hex) || !Tile.isTile(hex.tile)) return;
+	if (!TileView.FogOfWar.isHexExplored(currentGame.players[0], hex)) return;
+	ActionSprites.spriteOnActiveTile.setActive(true).setVisible(true).setPosition(hex.x, hex.y).setDepth(GameConfig.depths.actionSprites);
+	MainGameScene.cameras.main.pan(hex.x, hex.y, 500, 'Linear', true);
+});
+
+function hideActiveTileSprite() {
+	const { offscreen } = GameConfig.getWindowConfig();
+	ActionSprites.spriteOnActiveTile?.setActive(false).setPosition(offscreen, offscreen).setDepth(GameConfig.depths.offscreen);
+}
+currentGame.events.on('doing-action', hideActiveTileSprite);
+currentGame.events.on('center-map', hideActiveTileSprite);
 
 function CenterCameraOnActiveUnit(event) {
 	if (globalThis.Phaser === undefined) {
@@ -195,6 +216,7 @@ export default {
 			this.load.image(`laborers.${laborerType}`, `img/laborers/${laborerType}.png`);
 		});
 		// Load images for player's actions
+		this.load.image('activeTile', 'img/activeTile.png');
 		this.load.image('activeUnit', 'img/activeUnit.png');
 		World.actions.forEach((action) => {
 			if (action.icon) this.load.image(`actions.${action.key}`, `img/actions/${action.icon}`);
@@ -258,6 +280,7 @@ export default {
 
 		const windowConfig = GameConfig.getWindowConfig();
 		// Add Game Sprites and Images
+		ActionSprites.spriteOnActiveTile = this.add.image(windowConfig.offscreen, windowConfig.offscreen, 'activeTile').setActive(false);
 		ActionSprites.spriteOnActiveUnit = this.add.image(windowConfig.offscreen, windowConfig.offscreen, 'activeUnit').setActive(false);
 
 		// Define the cameras for the world view and minimap
@@ -290,6 +313,7 @@ export default {
 			minimap.centerOn(Hex.Grid.pixelWidth / 2, Hex.Grid.pixelHeight / 2);
 			minimap.ignore([
 				currentGame.graphics.territoryLines,
+				ActionSprites.spriteOnActiveTile,
 				ActionSprites.spriteOnActiveUnit,
 			]);
 		}

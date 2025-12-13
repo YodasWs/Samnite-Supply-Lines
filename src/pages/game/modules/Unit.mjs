@@ -116,7 +116,7 @@ export default class Unit extends Movable {
 		}
 	}
 
-	setAction(action, params = {}) {
+	setAction(action, params = {}, Grid = Hex.Grid) {
 		if (typeof action !== 'string') {
 			throw new TypeError('Unit.setAction expects action to be a string!');
 		}
@@ -128,7 +128,7 @@ export default class Unit extends Movable {
 				action,
 				params,
 			},
-			this.setPathAndMove(params.hex);
+			this.setPathAndMove(params.hex, Grid);
 			return;
 		}
 	}

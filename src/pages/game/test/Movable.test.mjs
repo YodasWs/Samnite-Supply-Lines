@@ -161,4 +161,44 @@ describe('Movable class', () => {
 		const result = movable.setPath(end, testGrid);
 		assert.equal(result, null);
 	});
+
+	test('setPathAndMove sets path and moves if possible', () => {
+		const movable = new Movable({
+			hex: testGrid.getHex({ row: 0, col: 0 }),
+		});
+		const targetHex = testGrid.getHex({ row: 0, col: 2 });
+
+		movable.prepareForNewTurn(testGrid);
+		movable.activate(true);
+		movable.setPathAndMove(targetHex, testGrid);
+
+		assert.equal(movable.row, 0);
+		assert.equal(movable.col, 1);
+
+		movable.prepareForNewTurn(testGrid);
+		movable.activate(true);
+
+		assert.equal(movable.row, targetHex.row);
+		assert.equal(movable.col, targetHex.col);
+	});
+
+	test('setPathAndMove sets path but does not move if already moved', () => {
+		const movable = new Movable({
+			hex: testGrid.getHex({ row: 0, col: 0 }),
+		});
+		let targetHex = testGrid.getHex({ row: 0, col: 2 });
+
+		movable.prepareForNewTurn(testGrid);
+		movable.setPath(targetHex, testGrid);
+		assert.true(movable.canContinueOnPath, 'should be able to continue on path');
+		movable.activate(true);
+		assert.equal(movable.row, 0);
+		assert.equal(movable.col, 1);
+		assert.false(movable.canContinueOnPath, 'already moved, should not be able to continue on path this turn');
+
+		targetHex = testGrid.getHex({ row: 0, col: 2 });
+		movable.setPathAndMove(targetHex, testGrid);
+		assert.equal(movable.row, targetHex.row);
+		assert.notEqual(movable.col, targetHex.col);
+	});
 });

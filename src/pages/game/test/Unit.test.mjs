@@ -261,4 +261,28 @@ describe('Unit class', () => {
 			assert.equal(unit.col, coords.col);
 		});
 	});
+
+	it('should set action on far tile, move there, and complete action', (t) => {
+		t.todo('need to determine how to test action completion effects');
+		const [row, col] = [2, 2];
+		testGrid = new Honeycomb.Grid(mockHex, Honeycomb.spiral({
+			start: { row, col },
+			radius: 1,
+		}));
+		const unit = new Unit('farmer', {
+			hex: testGrid.getHex({ row, col }),
+			faction,
+		});
+		unit.prepareForNewTurn(testGrid);
+		unit.activate(true);
+		const targetHex = testGrid.getHex({ row: row - 1, col: col - 1 });
+		unit.setAction('build-farm', { hex: targetHex }, testGrid);
+		// First, did Unit move to target hex?
+		assert.equal(unit.row, targetHex.row);
+		assert.equal(unit.col, targetHex.col);
+		// Next turn, does Unit complete action there?
+		unit.prepareForNewTurn(testGrid);
+		unit.activate(true);
+		assert.true(unit.deleted, 'unit not deleted after completing action');
+	});
 });

@@ -1,6 +1,6 @@
-# Roman Logistics Tycoon
+# Samnite Supply Lines — A Latent Hegemony™ Project
 
-I'm building a tycoon game! You can [play now](https://yodasws.github.io/RomanLogisticsTycoon/#!/game/) in your browser.
+I'm building a tycoon game! You can [play now](https://yodasws.github.io/Samnite-Supply-Lines/#!/game/) in your browser.
 
 ### The empire is built not by legions, but by cart.
 
@@ -8,16 +8,16 @@ I'm building a tycoon game! You can [play now](https://yodasws.github.io/RomanLo
 
 ## Project Roadmap
 
-ℹ️ [Roadmap](https://github.com/YodasWs/RomanLogisticsTycoon/blob/master/ROADMAP.md)
+ℹ️ [Roadmap](https://github.com/YodasWs/Samnite-Supply-Lines/blob/master/ROADMAP.md)
 
 We are currently working on solidifying the Core Game Loop, improving and expanding the UI, and refactoring the code to make future expansion and contribution easier!
 
 ## Project Links
 
 - [Kanban Board](https://github.com/users/YodasWs/projects/3/)
-- [Discussions](https://github.com/YodasWs/RomanLogisticsTycoon/discussions)
-- [Project Wiki/Documentation](https://github.com/YodasWs/RomanLogisticsTycoon/wiki)
+- [Discussions](https://github.com/YodasWs/Samnite-Supply-Lines/discussions)
+- [Project Wiki/Documentation](https://github.com/YodasWs/Samnite-Supply-Lines/wiki)
 
 ## Contributing
 
-I hope you all enjoy what I've started and I look forward to seeing how we can grow the project together. Check out the details in [CONTRIBUTING.md](https://github.com/YodasWs/RomanLogisticsTycoon?tab=contributing-ov-file).
+I hope you all enjoy what I've started and I look forward to seeing how we can grow the project together. Check out the details in [CONTRIBUTING.md](https://github.com/YodasWs/Samnite-Supply-Lines?tab=contributing-ov-file).

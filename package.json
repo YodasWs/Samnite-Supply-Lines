@@ -1,18 +1,18 @@
 {
-	"name": "@yodasws/RomanLogisticsTycoon",
+	"name": "@yodasws/Samnite-Supply-Lines",
 	"version": "0.0.1-alpha",
 	"description": "Simple logistics tycoon game",
 	"private": true,
 	"main": "gulpfile.js",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/YodasWs/RomanLogisticsTycoon.git"
+		"url": "git+https://github.com/YodasWs/Samnite-Supply-Lines.git"
 	},
 	"author": "Samuel B Grundman (https://github.com/YodasWs/)",
 	"bugs": {
-		"url": "https://github.com/YodasWs/RomanLogisticsTycoon/issues"
+		"url": "https://github.com/YodasWs/Samnite-Supply-Lines/issues"
 	},
-	"homepage": "https://github.com/YodasWs/RomanLogisticsTycoon#readme",
+	"homepage": "https://github.com/YodasWs/Samnite-Supply-Lines#readme",
 	"scripts": {
 		"build": "gulp compile",
 		"dev": "gulp",

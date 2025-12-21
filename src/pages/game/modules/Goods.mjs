@@ -1,4 +1,4 @@
-import World from '../../../json/world.mjs';
+import * as GameConfig from '../modules/Config.mjs';
 
 import * as Hex from './Hex.mjs';
 import Movable from './Movable.mjs';
@@ -20,7 +20,7 @@ export default class Goods extends Movable {
 		}
 
 		super({
-			base: World.ResourceTransporter,
+			base: GameConfig.World.ResourceTransporter,
 			hex,
 		});
 		this.#goodsType = goodsType;
@@ -78,7 +78,7 @@ export default class Goods extends Movable {
 	}
 
 	static isValidGoodsType(type) {
-		return typeof (World.goods[type] ?? false) === 'object';
+		return typeof (GameConfig.World.goods[type] ?? false) === 'object';
 	}
 
 	static MaxFoodRounds = 5;

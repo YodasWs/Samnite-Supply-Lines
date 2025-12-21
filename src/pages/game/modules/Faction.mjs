@@ -1,4 +1,4 @@
-import World from '../../../json/world.mjs';
+import * as GameConfig from '../modules/Config.mjs';
 
 import City from './City.mjs';
 import Unit from './Unit.mjs';
@@ -29,7 +29,7 @@ function Faction({
 	index,
 }) {
 	const color = getFactionColor(index);
-	const name = World?.FactionNames[index];
+	const name = GameConfig.World?.FactionNames[index];
 	let money = 0;
 	let units = [];
 
@@ -38,8 +38,7 @@ function Faction({
 		if (goods.faction !== this || !City.isCity(goods.hex.city)) return;
 		// Deliver Food to City
 		promise.then(() => {
-			console.log('Sam, Faction received', goods.num, 'goods for', World.ResourceValues[goods.goodsType], 'each');
-			this.money += World.ResourceValues[goods.goodsType] * goods.num;
+			this.money += GameConfig.World.ResourceValues[goods.goodsType] * goods.num;
 			console.log('Sam, Faction new money total:', this.money);
 		});
 	});

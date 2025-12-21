@@ -1,6 +1,5 @@
 import * as Honeycomb from 'honeycomb-grid';
 import * as GameConfig from '../modules/Config.mjs';
-import World from '../../../json/world.mjs';
 
 import { currentGame } from '../modules/Game.mjs';
 import * as Hex from '../modules/Hex.mjs';
@@ -40,10 +39,10 @@ export default {
 		this.scene.pause('mainGameScene');
 		domTileView ??= document.getElementById('tile-view');
 
-		Object.keys(World.laborers).forEach((laborerType) => {
+		Object.keys(GameConfig.World.laborers).forEach((laborerType) => {
 			this.load.image(`laborers.${laborerType}`, `img/laborers/${laborerType}.png`);
 		});
-		Object.entries(World.improvements).forEach(([key, improvement]) => {
+		Object.entries(GameConfig.World.improvements).forEach(([key, improvement]) => {
 			if (typeof improvement.tile === 'string' && improvement.tile.length > 0) {
 				this.load.image(`improvements.${key}`, `img/improvements/${improvement.tile}.png`);
 			}

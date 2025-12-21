@@ -1,5 +1,3 @@
-import World from '../../../json/world.mjs';
-
 import * as Honeycomb from 'honeycomb-grid';
 import * as GameConfig from './Config.mjs';
 

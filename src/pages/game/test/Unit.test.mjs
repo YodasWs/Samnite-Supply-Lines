@@ -139,9 +139,9 @@ describe('Unit class', () => {
 		t.mock.method(currentGame.events, 'emit', t.mock.fn());
 
 		const validUnit1 = new Unit('farmer', unitOptions);
-		const validUnit2 = new Unit('rancher', unitOptions);
+		const validUnit2 = new Unit('farmer', unitOptions);
 		const deletedUnit1 = new Unit('farmer', unitOptions);
-		const deletedUnit2 = new Unit('rancher', unitOptions);
+		const deletedUnit2 = new Unit('farmer', unitOptions);
 		const movedUnit1 = new Unit('farmer', unitOptions);
 		const units = [
 			validUnit1,
@@ -164,10 +164,10 @@ describe('Unit class', () => {
 		t.mock.method(currentGame.events, 'emit', t.mock.fn());
 
 		const validUnit1 = new Unit('farmer', unitOptions);
-		const validUnit2 = new Unit('rancher', unitOptions);
+		const validUnit2 = new Unit('farmer', unitOptions);
 		const movedUnit1 = new Unit('farmer', unitOptions);
-		const movedUnit2 = new Unit('rancher', unitOptions);
-		const deletedUnit1 = new Unit('rancher', unitOptions);
+		const movedUnit2 = new Unit('farmer', unitOptions);
+		const deletedUnit1 = new Unit('farmer', unitOptions);
 		const units = [
 			validUnit1,
 			movedUnit1,

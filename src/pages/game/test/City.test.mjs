@@ -2,7 +2,6 @@ import { describe, it, test, beforeEach } from 'node:test';
 import assert from './assert.mjs';
 
 import * as Honeycomb from 'honeycomb-grid';
-import World from '../../../json/world.mjs';
 import Faction from '../modules/Faction.mjs';
 import City from '../modules/City.mjs';
 import * as Hex from '../modules/Hex.mjs';
@@ -71,7 +70,7 @@ describe('City class', () => {
 		const faction = makeFaction(nation);
 		const city = new City({ hex, nation, Grid: testGrid });
 
-		city.addToQueue({ faction, unitType: Object.keys(World.units)[0] });
+		city.addToQueue({ faction, unitType: Object.keys(GameConfig.World.units)[0] });
 		assert.equal(city.queue.length, 1);
 		assert.equal(city.queue[0].faction, faction);
 	});
@@ -92,7 +91,7 @@ describe('City class', () => {
 		const city = new City({ hex, nation, Grid: testGrid });
 
 		assert.throws(() => {
-			city.addToQueue({ faction: {}, unitType: Object.keys(World.units)[0] });
+			city.addToQueue({ faction: {}, unitType: Object.keys(GameConfig.World.units)[0] });
 		}, /Faction/);
 	});
 
@@ -102,8 +101,8 @@ describe('City class', () => {
 		const faction = makeFaction(nation);
 		const city = new City({ hex, nation, Grid: testGrid });
 
-		const unitType = Object.keys(World.units)[0];
-		const unit = World.units[unitType];
+		const unitType = Object.keys(GameConfig.World.units)[0];
+		const unit = GameConfig.World.units[unitType];
 		faction.money = (unit.productionCosts.addToQueue.money || 0)
 			+ (unit.productionCosts.removeFromQueue.money || 0)
 			+ 10;

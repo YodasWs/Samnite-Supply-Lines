@@ -1,4 +1,3 @@
-import World from '../../../json/world.mjs';
 import * as Honeycomb from 'honeycomb-grid';
 import * as GameConfig from '../modules/Config.mjs';
 
@@ -48,10 +47,10 @@ export default {
 				option.value = '';
 				select.appendChild(option);
 			}
-			Object.keys(World.units).forEach((unitKey) => {
+			Object.keys(GameConfig.World.units).forEach((unitKey) => {
 				const option = document.createElement('option');
 				option.value = unitKey;
-				option.text = World.units[unitKey].name;
+				option.text = GameConfig.World.units[unitKey].name;
 				select.appendChild(option);
 			});
 			domProductionQueue.appendChild(select);
@@ -60,11 +59,11 @@ export default {
 			button.innerText = 'Add to Queue';
 			button.addEventListener('click', () => {
 				const unitType = select.options[select.selectedIndex].value;
-				if (!(unitType in World.units)) {
+				if (!(unitType in GameConfig.World.units)) {
 					console.error(`City View: Unknown unit type selected: ${unitType}`);
 					return;
 				}
-				const newUnitData = World.units[unitType];
+				const newUnitData = GameConfig.World.units[unitType];
 				try {
 					currentGame.currentPlayer.money -= newUnitData.productionCosts.addToQueue.money || 0;
 				} catch (e) {
@@ -81,7 +80,7 @@ export default {
 
 			select.addEventListener('change', () => {
 				const unitType = select.options[select.selectedIndex].value;
-				button.disabled = currentGame.currentPlayer.money < (World.units?.[unitType]?.productionCosts?.addToQueue?.money || 0)
+				button.disabled = currentGame.currentPlayer.money < (GameConfig.World.units?.[unitType]?.productionCosts?.addToQueue?.money || 0)
 					|| unitType === '';
 			});
 
@@ -176,7 +175,7 @@ export default {
 			queueList.innerHTML = '';
 			thisCity.queue.forEach(({ faction, unitType }) => {
 				const listItem = document.createElement('li');
-				listItem.innerText = `${faction.name}: ${World.units[unitType].name}`;
+				listItem.innerText = `${faction.name}: ${GameConfig.World.units[unitType].name}`;
 				queueList.appendChild(listItem);
 			});
 		}

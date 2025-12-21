@@ -1,4 +1,3 @@
-import World from '../../../json/world.mjs';
 import * as GameConfig from '../modules/Config.mjs';
 
 import City from '../modules/City.mjs';
@@ -198,7 +197,7 @@ export default {
 	autoStart: true,
 	preload() {
 		// Load World Tile Images
-		Object.entries(World.terrains).forEach(([key, terrain]) => {
+		Object.entries(GameConfig.World.terrains).forEach(([key, terrain]) => {
 			if (typeof terrain.tile === 'string' && terrain.tile.length > 0) {
 				this.load.image(`tile.${key}`, `img/tiles/${terrain.tile}.png`);
 			}
@@ -207,29 +206,29 @@ export default {
 			frameHeight: 200,
 			frameWidth: 200,
 		});
-		Object.entries(World.improvements).forEach(([key, improvement]) => {
+		Object.entries(GameConfig.World.improvements).forEach(([key, improvement]) => {
 			if (typeof improvement.tile === 'string' && improvement.tile.length > 0) {
 				this.load.image(`improvements.${key}`, `img/improvements/${improvement.tile}.png`);
 			}
 		});
-		Object.entries(World.goods).forEach(([key, resource]) => {
+		Object.entries(GameConfig.World.goods).forEach(([key, resource]) => {
 			if (typeof resource.tile === 'string' && resource.tile.length > 0) {
 				this.load.image(`goods.${key}`, `img/resources/${resource.tile}.png`);
 			}
 		});
 		// Load images for Laborers
-		Object.keys(World.laborers).forEach((laborerType) => {
+		Object.keys(GameConfig.World.laborers).forEach((laborerType) => {
 			this.load.image(`laborers.${laborerType}`, `img/laborers/${laborerType}.png`);
 		});
 		// Load images for player's actions
 		this.load.image('activeTile', 'img/activeTile.png');
 		this.load.image('activeUnit', 'img/activeUnit.png');
 		this.load.image('actions.cancel', 'img/actions/cancel.png');
-		World.actions.forEach((action) => {
+		GameConfig.World.actions.forEach((action) => {
 			if (action.icon) this.load.image(`actions.${action.key}`, `img/actions/${action.icon}`);
 		});
 		// Load Unit Images
-		Object.keys(World.units).forEach((unitType) => {
+		Object.keys(GameConfig.World.units).forEach((unitType) => {
 			this.load.image(`unit.${unitType}`, `img/units/${unitType}.png`);
 		});
 		currentGame.scenes.mainGame = this;
@@ -246,13 +245,13 @@ export default {
 
 		// Build World from Honeycomb Grid
 		Hex.Grid.forEach((hex) => {
-			const tile = World.world[hex.row][hex.col];
+			const tile = GameConfig.World.world[hex.row][hex.col];
 			Object.assign(hex, tile, {
 				tile: new Tile({
 					hex,
 				}),
 				terrain: {
-					...World.terrains[tile.terrain],
+					...GameConfig.World.terrains[tile.terrain],
 					terrain: tile.terrain,
 				},
 				sprite: this.add.image(hex.x, hex.y, `tile.${tile.terrain}`),
@@ -326,11 +325,11 @@ export default {
 		}
 
 		// TODO: Build Starting Players and Units
-		currentGame.players[0].addUnit('rancher', Hex.Grid.getHex({ row: 2, col: 3 }), this);
-		currentGame.players[0].addUnit('farmer', Hex.Grid.getHex({ row: 2, col: 4 }), this);
-		currentGame.players[0].addUnit('miner', Hex.Grid.getHex({ row: 2, col: 2 }), this);
-		currentGame.players[0].addUnit('settler', Hex.Grid.getHex({ row: 3, col: 3 }), this);
-		currentGame.players[0].addUnit('builder', Hex.Grid.getHex({ row: 1, col: 3 }), this);
+		currentGame.players[0].addUnit('warrior', Hex.Grid.getHex({ row: 2, col: 8 }), this);
+		currentGame.players[0].addUnit('farmer', Hex.Grid.getHex({ row: 2, col: 7 }), this);
+		currentGame.players[0].addUnit('farmer', Hex.Grid.getHex({ row: 2, col: 9 }), this);
+		currentGame.players[0].addUnit('farmer', Hex.Grid.getHex({ row: 3, col: 8 }), this);
+		currentGame.players[0].addUnit('farmer', Hex.Grid.getHex({ row: 1, col: 8 }), this);
 		TileView.setTileVisibility();
 
 		this.inputManager = new InputManager(this);

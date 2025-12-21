@@ -2,7 +2,6 @@ import { describe, it, test, beforeEach } from 'node:test';
 import assert from './assert.mjs';
 
 import * as Honeycomb from 'honeycomb-grid';
-import World from '../../../json/world.mjs';
 import * as GameConfig from '../modules/Config.mjs';
 import Goods from '../modules/Goods.mjs';
 import Movable from '../modules/Movable.mjs';

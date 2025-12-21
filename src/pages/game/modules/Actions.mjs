@@ -1,5 +1,5 @@
-import World from '../../../json/world.mjs';
 import * as Honeycomb from 'honeycomb-grid';
+import * as GameConfig from '../modules/Config.mjs';
 
 import * as Hex from './Hex.mjs';
 import City from './City.mjs';
@@ -84,7 +84,7 @@ function loadActions(actionDefs) {
 		ActionRegistry.set(action.key, action);
 	});
 }
-loadActions(World.actions);
+loadActions(GameConfig.World.actions);
 
 const ActionValidators = {
 	currentPlayerTurn() {

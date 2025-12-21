@@ -1,4 +1,4 @@
-import World from '../../../json/world.mjs';
+import * as GameConfig from './Config.mjs';
 
 import * as Hex from './Hex.mjs';
 import Faction from './Faction.mjs';
@@ -52,7 +52,7 @@ export default class Unit extends Movable {
 		if (!Faction.isFaction(faction)) {
 			throw new TypeError('Unit expects to be assigned a Faction!');
 		}
-		const base = World.units[unitType] ?? throwTypeError(`Unknown unit '${unitType}'`)
+		const base = GameConfig.World.units[unitType] ?? throwTypeError(`Unknown unit '${unitType}'`)
 
 		super({ base, hex, faction });
 		this.#sightDistance = base.sightDistance || 1;

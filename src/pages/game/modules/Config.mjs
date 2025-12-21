@@ -1,3 +1,5 @@
+export { default as World } from '../../../json/world.mjs';
+
 export const scale = 0.5;
 export const tileWidth = 200;
 export const unitWidth = 110;

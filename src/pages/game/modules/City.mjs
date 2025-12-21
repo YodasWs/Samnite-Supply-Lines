@@ -1,4 +1,3 @@
-import World from '../../../json/world.mjs';
 import * as Honeycomb from 'honeycomb-grid';
 import * as GameConfig from './Config.mjs';
 
@@ -72,9 +71,9 @@ export default class City {
 			if (this.#queue.length <= 0) return;
 			console.log('Sam, in processFood');
 			const { faction, unitType } = this.#queue[0];
-			const foodCost = World.units?.[unitType]?.productionCosts?.removeFromQueue?.food || 0;
+			const foodCost = GameConfig.World.units?.[unitType]?.productionCosts?.removeFromQueue?.food || 0;
 			// TODO: Don't let a faction that cannot afford the unit continue to block the queue
-			const moneyCost = World.units?.[unitType]?.productionCosts?.removeFromQueue?.money || 0;
+			const moneyCost = GameConfig.World.units?.[unitType]?.productionCosts?.removeFromQueue?.money || 0;
 			if (faction.money < moneyCost) {
 				// TODO: This is here only for development/testing purposes until we have a proper queue management system
 				this.#queue.shift();
@@ -117,7 +116,7 @@ export default class City {
 		if (!Faction.isFaction(faction)) {
 			throw new TypeError('City.addToQueue expects to be assigned object instance of Faction!');
 		}
-		if (!(unitType in World.units)) {
+		if (!(unitType in GameConfig.World.units)) {
 			console.warn(`City production queue: Unknown unit key ${unitType}`);
 			return;
 		}

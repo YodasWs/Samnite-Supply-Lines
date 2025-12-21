@@ -3,7 +3,6 @@ import assert from './assert.mjs';
 
 import * as Honeycomb from 'honeycomb-grid';
 import * as GameConfig from '../modules/Config.mjs';
-import World from '../../../json/world.mjs';
 
 import * as Actions from '../modules/Actions.mjs';
 import Unit, * as UnitUtils from '../modules/Unit.mjs';
@@ -21,7 +20,7 @@ class mockHex extends Honeycomb.defineHex({
 }) {
 	constructor(options) {
 		super(options);
-		this.terrain = World.terrains[options.terrain || 'grass'] || {};
+		this.terrain = GameConfig.World.terrains[options.terrain || 'grass'] || {};
 		this.tile = { faction: new Faction({ index: 0 }) };
 	}
 }
@@ -99,7 +98,7 @@ describe('Faction class', () => {
 
 		const validUnit1 = new Unit('farmer', unitOptions);
 		const movedUnit1 = new Unit('farmer', unitOptions);
-		const movedUnit2 = new Unit('rancher', unitOptions);
+		const movedUnit2 = new Unit('farmer', unitOptions);
 		const units = [
 			movedUnit1,
 			validUnit1,
@@ -119,7 +118,7 @@ describe('Faction class', () => {
 
 		const validUnit1 = new Unit('farmer', unitOptions);
 		const movedUnit1 = new Unit('farmer', unitOptions);
-		const movedUnit2 = new Unit('rancher', unitOptions);
+		const movedUnit2 = new Unit('farmer', unitOptions);
 		const units = [
 			validUnit1,
 			movedUnit1,
@@ -138,7 +137,7 @@ describe('Faction class', () => {
 		t.mock.method(currentGame.events, 'emit', t.mock.fn());
 
 		const movedUnit1 = new Unit('farmer', unitOptions);
-		const movedUnit2 = new Unit('rancher', unitOptions);
+		const movedUnit2 = new Unit('farmer', unitOptions);
 		movedUnit1.deactivate(true);
 		movedUnit2.deactivate(true);
 		const units = [

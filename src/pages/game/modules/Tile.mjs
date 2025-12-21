@@ -1,4 +1,4 @@
-import World from '../../../json/world.mjs';
+import * as GameConfig from './Config.mjs';
 
 import City from './City.mjs';
 import Faction from './Faction.mjs';
@@ -11,11 +11,11 @@ function isValidImprovement(hex, improvement, builtImprovement) {
 	if (!Hex.isHex(hex)) return false;
 	if (typeof improvement !== 'string' || improvement === '') return false;
 	// Improvement must exist
-	if (!(improvement in World.improvements)) return false;
+	if (!(improvement in GameConfig.World.improvements)) return false;
 	// Improvement must be same as current, or new
 	if (builtImprovement.key !== '') return false;
 	// Improvement must be valid for terrain
-	if (!(hex.terrain.terrain in World.improvements[improvement]?.terrains)) return false;
+	if (!(hex.terrain.terrain in GameConfig.World.improvements[improvement]?.terrains)) return false;
 	// Cannot build improvement in city
 	if (City.isCity(hex.city)) return false;
 	return true;
@@ -149,8 +149,8 @@ export default class Tile {
 
 		if (isValidImprovement(this.#hex, val, this.#builtImprovement)) {
 			this.#objImprovement = {
-				...World.improvements[val],
-				...World.improvements[val].terrains[this.#hex.terrain.terrain],
+				...GameConfig.World.improvements[val],
+				...GameConfig.World.improvements[val].terrains[this.#hex.terrain.terrain],
 				key: val,
 			};
 			if (faction instanceof Faction) {

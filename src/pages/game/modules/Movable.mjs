@@ -1,5 +1,5 @@
-import World from '../../../json/world.mjs';
 import * as Honeycomb from 'honeycomb-grid';
+import * as GameConfig from '../modules/Config.mjs';
 
 import Faction from './Faction.mjs';
 import * as Hex from './Hex.mjs';
@@ -82,7 +82,7 @@ function FindPath(start, end, movable, Grid) {
 }
 
 export default class Movable {
-	#base = World.StandardMovable;
+	#base = GameConfig.World.StandardMovable;
 	#deleted = false;
 	#faction
 	#hex

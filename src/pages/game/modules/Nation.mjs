@@ -1,4 +1,4 @@
-import World from '../../../json/world.mjs';
+import * as GameConfig from './Config.mjs';
 
 function Nation({
 	index,
@@ -9,7 +9,7 @@ function Nation({
 		0x0000ff,
 	][index] ?? 0xaaaaaa;
 	const frame = (index + 1) % 3;
-	const name = World.NationNames?.[index] ?? 'Unknown';
+	const name = GameConfig.World.NationNames?.[index] ?? 'Unknown';
 	Object.defineProperties(this, {
 		color: {
 			enumerable: true,

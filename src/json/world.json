@@ -97,11 +97,7 @@
 					"food": 2,
 					"turnsForProduction": 1
 				},
-				"moor": {
-					"food": 1,
-					"turnsForProduction": 1
-				},
-				"swamp": {
+				"marsh": {
 					"food": 2,
 					"turnsForProduction": 6
 				}
@@ -109,59 +105,42 @@
 		}
 	},
 	"FactionNames": [
-		"Publius Helvius Pertinax",
-		"Gaius Flavius Agricola",
-		"Brigantes",
-		"Catuvellauni",
-		"Trinovantes",
-		"Dobunni",
-		"Cornovii",
-		"Atrebates"
+		"Appius Claudius Caecus",
+		"Marcus Valerius Corvus",
+		"Cnaeus Flavius"
 	],
 	"NationNames": [
-		"Roman Empire"
+		"Roman Republic"
 	],
 	"StandardMovable": {
-		"crossCreeks": 1.25,
-		"crossStreams": 1.5,
 		"moveOnLand": true,
 		"moveOnWater": false,
 		"movementPoints": 12,
 		"movementCosts": {
-			"canal": 12,
-			"stream": 12,
-			"river": 24,
-			"desert": 12,
+			"forest": 18,
 			"grass": 12,
 			"hill": 18,
 			"marsh": 18,
-			"moor": 12,
 			"mountain": 24,
-			"oceans": 12,
-			"swamp": 24
+			"ocean": 12,
+			"marsh": 24
 		}
 	},
 	"ResourceValues": {
 		"food": 10
 	},
 	"ResourceTransporter": {
-		"crossCreeks": 1.25,
-		"crossStreams": 2,
 		"moveOnLand": true,
 		"moveOnWater": false,
 		"movementPoints": 12,
 		"movementCosts": {
-			"canal": 3,
-			"stream": 6,
-			"river": 3,
-			"desert": 12,
+			"forest": 18,
 			"grass": 12,
 			"hill": 18,
 			"marsh": 18,
-			"moor": 12,
 			"mountain": 24,
-			"oceans": 12,
-			"swamp": 24
+			"ocean": 12,
+			"marsh": 24
 		}
 	},
 	"goods": {
@@ -170,30 +149,23 @@
 		}
 	},
 	"terrains": {
-		"desert": {
-			"name": "Desert",
-			"movementCost": 12,
+		"forest": {
+			"name": "Forest",
+			"movementCost": 18,
 			"food": 0,
-			"tile": "desert"
+			"tile": "forest"
 		},
 		"grass": {
 			"name": "Grassland",
 			"movementCost": 12,
-			"food": 1,
+			"food": 0,
 			"tile": "grass"
 		},
 		"hill": {
 			"name": "Hill",
 			"movementCost": 12,
-			"food": 1,
+			"food": 0,
 			"tile": "grass"
-		},
-		"lake": {
-			"name": "Lake",
-			"movementCost": 12,
-			"food": 1,
-			"isWater": true,
-			"tile": "lake"
 		},
 		"marsh": {
 			"name": "Marsh",
@@ -201,12 +173,6 @@
 			"food": 0,
 			"isWater": true,
 			"tile": "swamp"
-		},
-		"moor": {
-			"name": "Moor",
-			"movementCost": 12,
-			"food": 0,
-			"tile": "mountains"
 		},
 		"mountain": {
 			"name": "Mountain",
@@ -217,52 +183,17 @@
 		"ocean": {
 			"name": "Ocean",
 			"movementCost": 12,
-			"food": 1,
-			"isWater": true,
-			"tile": "ocean"
-		},
-		"swamp": {
-			"name": "Swamp",
-			"movementCost": 12,
 			"food": 0,
 			"isWater": true,
-			"tile": "swamp"
+			"tile": "ocean"
 		}
 	},
 	"laborers": {
 		"farmer": {
 			"name": "Farmer"
-		},
-		"miner": {
-			"name": "Miner"
-		},
-		"rancher": {
-			"name": "Rancher"
 		}
 	},
 	"units": {
-		"builder": {
-			"name": "Builder",
-			"defense": 0,
-			"moveOnWater": false,
-			"movementPoints": 12,
-			"productionCosts": {
-				"addToQueue": {
-					"money": 50
-				},
-				"removeFromQueue": {
-					"food": 25
-				}
-			},
-			"movementCosts": {
-				"desert": 12,
-				"grass": 12,
-				"hill": 12,
-				"moor": 12,
-				"mountain": 24,
-				"swamp": 24
-			}
-		},
 		"farmer": {
 			"name": "Farmer",
 			"defense": 0,
@@ -277,78 +208,10 @@
 				}
 			},
 			"movementCosts": {
-				"desert": 12,
 				"grass": 12,
 				"hill": 12,
-				"moor": 12,
 				"mountain": 24,
-				"swamp": 24
-			}
-		},
-		"miner": {
-			"name": "Miner",
-			"defense": 0,
-			"moveOnWater": false,
-			"movementPoints": 12,
-			"productionCosts": {
-				"addToQueue": {
-					"money": 40
-				},
-				"removeFromQueue": {
-					"food": 20
-				}
-			},
-			"movementCosts": {
-				"desert": 12,
-				"grass": 12,
-				"hill": 12,
-				"moor": 12,
-				"mountain": 24,
-				"swamp": 24
-			}
-		},
-		"rancher": {
-			"name": "Rancher",
-			"defense": 0,
-			"moveOnWater": false,
-			"movementPoints": 12,
-			"productionCosts": {
-				"addToQueue": {
-					"money": 10
-				},
-				"removeFromQueue": {
-					"food": 15
-				}
-			},
-			"movementCosts": {
-				"desert": 12,
-				"grass": 12,
-				"hill": 12,
-				"moor": 12,
-				"mountain": 24,
-				"swamp": 24
-			}
-		},
-		"settler": {
-			"name": "Settler",
-			"defense": 0,
-			"moveOnWater": false,
-			"movementPoints": 12,
-			"productionCosts": {
-				"addToQueue": {
-					"money": 30
-				},
-				"removeFromQueue": {
-					"food": 50
-				}
-			},
-			"movementCosts": {
-				"desert": 12,
-				"grass": 12,
-				"hill": 12,
-				"moor": 12,
-				"mountain": 24,
-				"swamp": 24
+				"marsh": 24
 			}
 		},
 		"warrior": {
@@ -367,12 +230,10 @@
 				}
 			},
 			"movementCosts": {
-				"desert": 12,
 				"grass": 12,
 				"hill": 12,
-				"moor": 12,
 				"mountain": 24,
-				"swamp": 24
+				"marsh": 24
 			}
 		}
 	},
@@ -429,8 +290,7 @@
 				"terrain": "grass"
 			},
 			{
-				"terrain": "swamp",
-				"river": true
+				"terrain": "marsh"
 			},
 			{
 				"terrain": "lake"
@@ -474,14 +334,13 @@
 		],
 		[
 			{
-				"terrain": "desert"
+				"terrain": "grass"
 			},
 			{
-				"terrain": "desert",
-				"river": true
+				"terrain": "grass"
 			},
 			{
-				"terrain": "desert"
+				"terrain": "grass"
 			},
 			{
 				"terrain": "grass",
@@ -493,7 +352,7 @@
 				"terrain": "grass"
 			},
 			{
-				"terrain": "grass"
+				"terrain": "forest"
 			},
 			{
 				"terrain": "mountain"
@@ -531,6 +390,27 @@
 				"terrain": "mountain"
 			},
 			{
+				"terrain": "forest"
+			},
+			{
+				"terrain": "grass"
+			},
+			{
+				"terrain": "grass"
+			},
+			{
+				"terrain": "forest"
+			},
+			{
+				"terrain": "mountain"
+			},
+			{
+				"terrain": "grass"
+			},
+			{
+				"terrain": "grass"
+			},
+			{
 				"terrain": "grass"
 			},
 			{
@@ -541,6 +421,32 @@
 			},
 			{
 				"terrain": "grass"
+			},
+			{
+				"terrain": "grass"
+			},
+			{
+				"terrain": "grass"
+			}
+		],
+		[
+			{
+				"terrain": "forest"
+			},
+			{
+				"terrain": "forest"
+			},
+			{
+				"terrain": "forest"
+			},
+			{
+				"terrain": "grass"
+			},
+			{
+				"terrain": "grass"
+			},
+			{
+				"terrain": "forest"
 			},
 			{
 				"terrain": "mountain"
@@ -584,54 +490,7 @@
 				"terrain": "grass"
 			},
 			{
-				"terrain": "grass"
-			},
-			{
-				"terrain": "grass"
-			},
-			{
-				"terrain": "mountain"
-			},
-			{
-				"terrain": "grass"
-			},
-			{
-				"terrain": "grass"
-			},
-			{
-				"terrain": "grass"
-			},
-			{
-				"terrain": "grass"
-			},
-			{
-				"terrain": "grass"
-			},
-			{
-				"terrain": "grass"
-			},
-			{
-				"terrain": "grass"
-			},
-			{
-				"terrain": "grass"
-			}
-		],
-		[
-			{
-				"terrain": "grass"
-			},
-			{
-				"terrain": "grass"
-			},
-			{
-				"terrain": "grass"
-			},
-			{
-				"terrain": "grass"
-			},
-			{
-				"terrain": "grass"
+				"terrain": "forest"
 			},
 			{
 				"terrain": "mountain"

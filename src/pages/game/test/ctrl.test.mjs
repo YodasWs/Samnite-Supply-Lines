@@ -193,7 +193,7 @@ describe('Nation class', () => {
 	});
 
 	it('should have the correct name', () => {
-		assert.equal(new Nation({ index: 0 }).name, 'Roman Empire');
+		assert.equal(new Nation({ index: 0 }).name, 'Roman Republic');
 		assert.equal(new Nation({ index: 1 }).name, 'Unknown');
 	});
 });

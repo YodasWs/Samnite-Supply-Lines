@@ -8,6 +8,8 @@ import { currentGame, GoodsOnBoard } from '../modules/Game.mjs';
 
 import InputManager from '../modules/InputManager.mjs';
 
+import { Modal } from '../views/modals/Modal.mjs';
+
 import { registerGoodsToView, renderGoods } from '../views/GoodsView.mjs';
 import { registerUnitToView, renderUnits } from '../views/UnitView.mjs';
 import * as TileView from '../views/TileView.mjs';
@@ -202,6 +204,9 @@ export default {
 				this.load.image(`tile.${key}`, `img/tiles/${terrain.tile}.png`);
 			}
 		});
+
+		// Global first-enemy detection: trigger once when any enemy unit
+		// is revealed on the map (not just when Rome is found).
 		this.load.spritesheet('cities', 'img/tiles/cities.png', {
 			frameHeight: 200,
 			frameWidth: 200,
@@ -235,6 +240,37 @@ export default {
 	},
 	create() {
 		MainGameScene = this;
+
+		// Modal state tracking for first-time notifications
+		this._modalState = {
+			romeFound: false,
+			firstFoodArrived: false,
+			lastFarmWarningTs: 0,
+			// Spoilage aggregation state
+			_spoilBuffer: [],
+			_spoilTimer: null,
+			_lastSpoilNotifyTs: 0,
+		};
+
+		// Global first-enemy detection: trigger once when any enemy unit
+		// is revealed on the map (not just when Rome is found).
+		currentGame.events.on('hex-visible', (evt) => {
+			if (this._modalState.seenEnemy) return;
+			const hex = evt.detail?.hex;
+			if (!hex) return;
+			let enemyFound = false;
+			currentGame.players.forEach((p) => {
+				if (p.index === 0) return;
+				(p.units || []).forEach((u) => {
+					if (!u || u.deleted) return;
+					if (u.hex === hex) enemyFound = true;
+				});
+			});
+			if (enemyFound) {
+				this._modalState.seenEnemy = true;
+				Modal.open({ type: 'first_enemy_army', once: true, priority: 9 });
+			}
+		});
 
 		// Add graphics objects
 		currentGame.graphics = {
@@ -333,6 +369,164 @@ export default {
 		TileView.setTileVisibility();
 
 		this.inputManager = new InputManager(this);
+
+		// Show intro modal once on game start
+		setTimeout(() => {
+			Modal.open({ type: 'intro_find_rome', once: true, priority: 0 });
+		}, 600);
+
+		// If player builds a Farm before finding Rome, warn them
+		currentGame.events.on('farm-built', (evt) => {
+			const { hex } = evt.detail || {};
+			const now = Date.now();
+			if (now - this._modalState.lastFarmWarningTs < 30 * 1000) return; // 30s cooldown
+			this._modalState.lastFarmWarningTs = now;
+			if (!this._modalState.romeFound) {
+				Modal.open({ type: 'farm_before_rome_warning', once: false, priority: 5 });
+				return;
+			}
+			// If Rome already found, check distance and warn if >5
+			const romeHex = Hex.Grid.getHex({ row: evt.detail?.romeRow ?? null, col: evt.detail?.romeCol ?? null }) || null;
+			// Fallback: find Rome city hex (first nation city)
+			let foundRome = null;
+			Hex.Grid.forEach((h) => {
+				if (h.city && h.city.nation === currentGame.nations?.[0]) foundRome = foundRome || h;
+			});
+			const rome = romeHex || foundRome;
+			if (!rome || !hex) return;
+			const d = Hex.Grid.distance(hex, rome);
+			if (d > 5) {
+				Modal.open({ type: 'distance_spoil_warning', once: false, priority: 7, payload: { distance: d, romeTileId: { row: rome.row, col: rome.col } } });
+			}
+		});
+
+		// When fog reveals a hex with a city belonging to Rome, mark Rome found
+		currentGame.events.on('hex-visible', (evt) => {
+			const hex = evt.detail?.hex;
+			if (!hex) return;
+			if (!hex.city) return;
+			// Consider Rome to be the first city of Nation index 0
+			const romeNation = currentGame.nations?.[0];
+			if (!romeNation) return;
+			if (hex.city.nation !== romeNation) return;
+			if (this._modalState.romeFound) return;
+			this._modalState.romeFound = true;
+			currentGame.events.emit('rome-found', { hex });
+			Modal.open({ type: 'post_rome_build_guidance', once: true, priority: 5 });
+
+			// Check for any existing farms farther than 5 tiles from Rome
+			const farFarms = [];
+			Hex.Grid.forEach((h) => {
+				if (h.tile.improvement?.key === 'farm') {
+					const d = Hex.Grid.distance(h, hex);
+					if (d > 5) farFarms.push({ hex: h, distance: d });
+				}
+			});
+			if (farFarms.length > 0) {
+				Modal.open({ type: 'distance_spoil_warning', once: true, priority: 7, payload: { count: farFarms.length, example: farFarms[0] } });
+			}
+			// Also check for enemy units on this hex (first encounter)
+			if (!this._modalState.seenEnemy) {
+				// scan all factions' units for units on this hex that are not player's
+				let enemyFound = false;
+				currentGame.players.forEach((p) => {
+					if (p.index === 0) return;
+					p.units.forEach((u) => {
+						if (u.deleted) return;
+						if (u.hex === hex) enemyFound = true;
+					});
+				});
+				if (enemyFound) {
+					this._modalState.seenEnemy = true;
+					Modal.open({ type: 'first_enemy_army', once: true, priority: 9 });
+				}
+			}
+		});
+
+		// Detect first Food arrival to Rome
+		currentGame.events.on('goods-moved', (evt) => {
+			const { goods, promise } = evt.detail || {};
+			if (!goods || typeof goods.goodsType === 'undefined') return;
+			if (goods.goodsType !== 'food') return;
+			if (!promise || typeof promise.then !== 'function') return;
+			promise.then(() => {
+				// If delivered to a City belonging to Rome
+				if (goods.hex?.city && goods.hex.city.nation === currentGame.nations?.[0]) {
+					if (!this._modalState.firstFoodArrived) {
+						this._modalState.firstFoodArrived = true;
+						Modal.open({ type: 'first_food_arrival', once: true, priority: 8 });
+					}
+				}
+			}).catch(() => {});
+		});
+
+		// Rome demand increase -> show modal once
+		currentGame.events.on('rome-demand-increase', (evt) => {
+			if (this._modalState.romeDemandNotified) return;
+			this._modalState.romeDemandNotified = true;
+			Modal.open({ type: 'rome_demand_increase', once: true, priority: 7, payload: { city: evt.detail?.city } });
+		});
+
+		// Food spoil events -> aggregate and alert player with cooldown
+		const SPOIL_AGGREGATION_MS = 2500; // window to aggregate multiple spoil events
+		const SPOIL_COOLDOWN_MS = 30 * 1000; // minimum time between spoil notifications
+		currentGame.events.on('food-spoiled', (evt) => {
+			// Push event into buffer
+			const detail = evt?.detail || {};
+			const goods = detail.goods || null;
+			this._modalState._spoilBuffer.push({ goods, rounds: detail.rounds || goods?.rounds || 0 });
+
+			// If a timer is already set, leave it to drain later
+			if (this._modalState._spoilTimer !== null) return;
+
+			// Set timer to aggregate events then notify once
+			this._modalState._spoilTimer = setTimeout(() => {
+				try {
+					const now = Date.now();
+					// enforce cooldown
+					if (now - this._modalState._lastSpoilNotifyTs < SPOIL_COOLDOWN_MS) {
+						// clear buffer and reset timer without notifying
+						this._modalState._spoilBuffer = [];
+						this._modalState._spoilTimer = null;
+						return;
+					}
+
+					const buffer = this._modalState._spoilBuffer.slice();
+					const count = buffer.length;
+					const totalRounds = buffer.reduce((s, b) => s + (b.rounds || 0), 0);
+					const example = buffer.find(b => b.goods && b.goods.start) || buffer[0] || {};
+
+					Modal.open({
+						type: 'food_spoiled',
+						once: false,
+						priority: 9,
+						payload: {
+							count,
+							totalRounds,
+							exampleStart: example.goods?.start ?? null,
+							goodsExample: example.goods ?? null,
+						},
+					});
+
+					this._modalState._lastSpoilNotifyTs = now;
+				} finally {
+					this._modalState._spoilBuffer = [];
+					clearTimeout(this._modalState._spoilTimer);
+					this._modalState._spoilTimer = null;
+				}
+			}, SPOIL_AGGREGATION_MS);
+		});
+
+		// Warn when the player's war units (legions) are created that they need tribute/supplies
+		currentGame.events.on('unit-created', (evt) => {
+			const unit = evt.detail?.unit;
+			if (!unit) return;
+			if (unit.faction !== currentGame.players[0]) return;
+			if (unit.unitType === 'warrior' && !this._modalState.legionWarnShown) {
+				this._modalState.legionWarnShown = true;
+				Modal.open({ type: 'legion_tribute_warning', once: true, priority: 9 });
+			}
+		});
 
 		this.events.on('pause', () => {
 			currentGame.scenes.pause('mainControls');

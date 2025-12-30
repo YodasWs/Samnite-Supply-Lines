@@ -1,0 +1,11 @@
+{
+  "intro_find_rome": "Welcome, Commander. Rome awaits — you must find Rome before you can send Food. Explore the map to locate Rome's city center.",
+  "farm_before_rome_warning": "Warning: You've built a Farm but Rome hasn't been found. Your Food has nowhere to go until you find Rome.",
+  "post_rome_build_guidance": "Well done — you've found Rome! Start building Farms within 5 tiles of Rome so Food arrives fresh. Farms farther away risk spoilage during transport.",
+  "distance_spoil_warning": "Warning: This Farm is more than 5 tiles from Rome. Food from here will spoil after 5 rounds in transit. Place Farms closer to Rome to avoid spoilage.",
+  "first_food_arrival": "Congratulations! The first Food shipment has reached Rome — your supply lines are working. Keep producing to meet demand.",
+  "rome_demand_increase": "Rome's demand for Food has increased. Produce more Farms near Rome to meet growing needs.",
+  "food_spoiled": "Alert: Some Food spoiled in transit. Consider building Farms closer to Rome or improving transport routes.",
+  "first_enemy_army": "Enemy army sighted nearby! Prepare your defenses and secure supply lines for the legions.",
+  "legion_tribute_warning": "Warning: Roman legionaries marching to the front need tribute and supplies. Ensure nearby Farms and stockpiles to support campaigns."
+}

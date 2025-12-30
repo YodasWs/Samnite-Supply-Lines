@@ -124,6 +124,16 @@ export default class City {
 			unitType,
 			faction,
 		});
+
+		// Notify UI when Rome (nation index 0) demand increases
+		try {
+			const romeNation = currentGame.nations?.[0];
+			if (romeNation && this.#nation === romeNation) {
+				currentGame.events.emit('rome-demand-increase', { city: this, unitType, faction });
+			}
+		} catch (e) {
+			console.warn('Could not emit rome-demand-increase', e);
+		}
 	}
 
 	static isCity(city) {

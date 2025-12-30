@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Modal Test</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background:#121212; color:#eee }
+    .btn { display:inline-block; margin:6px; padding:10px 14px; background:#2a7; color:#042; border-radius:6px; cursor:pointer }
+  </style>
+</head>
+<body>
+  <h2>Modal Smoke Test</h2>
+  <p>Click the buttons to open modals and exercise queueing and "don't show again" behavior.</p>
+  <div>
+    <div class="btn" id="intro">Show Intro</div>
+    <div class="btn" id="farmBefore">Show Farm-before-Rome</div>
+    <div class="btn" id="postRome">Show Post-Rome Guidance</div>
+    <div class="btn" id="distance">Show Distance Spoil Warning</div>
+    <div class="btn" id="firstFood">Show First Food Arrival</div>
+    <div class="btn" id="enemy">Show Enemy Warning</div>
+    <div class="btn" id="legion">Show Legion Tribute Warning</div>
+  </div>
+
+  <script type="module">
+    import { Modal } from './src/pages/game/views/modals/Modal.mjs';
+
+    document.getElementById('intro').addEventListener('click', async () => {
+      console.log(await Modal.open({ type: 'intro_find_rome', once: false }));
+    });
+    document.getElementById('farmBefore').addEventListener('click', async () => {
+      console.log(await Modal.open({ type: 'farm_before_rome_warning', once: false, priority: 5 }));
+    });
+    document.getElementById('postRome').addEventListener('click', async () => {
+      console.log(await Modal.open({ type: 'post_rome_build_guidance', once: false, priority: 5 }));
+    });
+    document.getElementById('distance').addEventListener('click', async () => {
+      console.log(await Modal.open({ type: 'distance_spoil_warning', once: false, priority: 6, payload: { distance: 7 } }));
+    });
+    document.getElementById('firstFood').addEventListener('click', async () => {
+      console.log(await Modal.open({ type: 'first_food_arrival', once: false, priority: 8 }));
+    });
+    document.getElementById('enemy').addEventListener('click', async () => {
+      console.log(await Modal.open({ type: 'first_enemy_army', once: false, priority: 9 }));
+    });
+    document.getElementById('legion').addEventListener('click', async () => {
+      console.log(await Modal.open({ type: 'legion_tribute_warning', once: false, priority: 9 }));
+    });
+
+    // Sequential test: open multiple modals quickly to test queueing
+    window.runSequence = async () => {
+      console.log('sequence start');
+      Modal.open({ type: 'intro_find_rome', once: false, priority: 0 });
+      Modal.open({ type: 'farm_before_rome_warning', once: false, priority: 5 });
+      Modal.open({ type: 'post_rome_build_guidance', once: false, priority: 6 });
+      Modal.open({ type: 'first_food_arrival', once: false, priority: 8 });
+      console.log('sequence queued');
+    }
+
+  </script>
+
+  <p style="margin-top:18px">To run: serve this folder, then open <strong>/modal_test.html</strong> in a browser.</p>
+</body>
+</html>

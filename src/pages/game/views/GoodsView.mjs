@@ -3,6 +3,8 @@ import { currentGame } from '../modules/Game.mjs';
 import { FogOfWar } from './TileView.mjs';
 import * as Hex from '../modules/Hex.mjs';
 
+const HexGoodsGrids = new Map(); // key: Hex instance → Map of Goods instance → GoodsViewDetail
+
 const goodsSprites = new Map(); // key: Goods instance → GoodsViewDetail
 const GoodsSpriteOptions = {
 	ease: 'Linear',
@@ -10,10 +12,15 @@ const GoodsSpriteOptions = {
 	yoyo: false,
 };
 
+currentGame.events.on('goods-destroyed', (evt) => {
+	destroyGoodsSprite(evt.detail.goods);
+});
+
 class GoodsViewDetail {
 	#hex
 	#scene
 	#sprite
+	#moving = false;
 
 	constructor(goods, scene) {
 		this.#hex = goods.hex;
@@ -25,6 +32,16 @@ class GoodsViewDetail {
 
 	get hex() {
 		return this.#hex;
+	}
+
+	get moving() {
+		return this.#moving;
+	}
+	set moving(val) {
+		if (typeof val !== 'boolean') {
+			throw new TypeError('GoodsViewDetail.moving expects to be assigned a boolean!');
+		}
+		this.#moving = val;
 	}
 
 	get scene() {
@@ -42,6 +59,13 @@ class GoodsViewDetail {
 		return this.#hex.y;
 	}
 
+	set x(val) {
+		this.#sprite.setX(val);
+	}
+	set y(val) {
+		this.#sprite.setX(val);
+	}
+
 	update(hex) {
 		if (Hex.isHex(hex)) {
 			this.#hex = hex;
@@ -56,20 +80,53 @@ export function registerGoodsToView(goods, scene) {
 	return goodsSprites.has(goods);
 }
 
+const gridWidth = 5;
+
 export function renderGoods() {
-	goodsSprites.forEach((detail, goods) => {
+	// Separate Goods by Hex
+	HexGoodsGrids.clear();
+	goodsSprites.entries().forEach(([goods, detail]) => {
+		if (goods.moving) return;
+		// Filter out deleted Goods
 		if (goods.deleted) {
 			destroyGoodsSprite(goods);
 			return;
 		}
+		if (!HexGoodsGrids.has(goods.hex)) {
+			HexGoodsGrids.set(goods.hex, new Map());
+		}
+		HexGoodsGrids.get(goods.hex).set(goods, detail);
+	});
 
+	// Move Goods that have changed Hex
+	goodsSprites.forEach((detail, goods) => {
 		if (detail.x !== goods.hex.x || detail.y !== goods.hex.y) {
+			detail.moving = true;
 			const promise = moveGoodsSprite(goods, detail.hex);
 			detail.update(goods.hex);
 			promise.then(() => {
+				detail.moving = false;
 				currentGame.events.emit('goods-moved', { goods, promise });
 			});
 		}
+	});
+
+	// Align Goods in their Hexes
+	HexGoodsGrids.forEach((goodsMap, hex) => {
+		goodsMap.forEach((detail, goods) => {
+			if (goods.deleted) {
+				goodsMap.delete(goods);
+			}
+		});
+		if (goodsMap.size === 0) return;
+		Phaser.Actions.GridAlign([...goodsMap.values()].filter(d => !d.moving).map(d => d.sprite), {
+			position: Phaser.Display.Align.CENTER,
+			width: gridWidth,
+			cellHeight: 32,
+			cellWidth: 32,
+			x: hex.x - 32 * (goodsMap.size < gridWidth ? goodsMap.size : gridWidth) / 2,
+			y: hex.y - 16 * Math.ceil(goodsMap.size / gridWidth),
+		});
 	});
 }
 
@@ -161,9 +218,8 @@ function moveGoodsSprite(goods, oldHex) {
 }
 
 export function destroyGoodsSprite(goods) {
-	if (!goodsSprites.has(goods)) {
-		return;
-	}
+	if (!goods.deleted) return; // Only remove view if Goods is truly deleted
+	if (!goodsSprites.has(goods)) return; // Already removed
 	const detail = goodsSprites.get(goods);
 	detail.sprite.setVisible(false);
 	detail.sprite.destroy();

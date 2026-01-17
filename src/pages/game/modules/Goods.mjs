@@ -48,6 +48,9 @@ export default class Goods extends Movable {
 		if (!Number.isInteger(val) || val < 0) {
 			throw new TypeError('Goods.num expects to be assigned a nonnegative integer!');
 		}
+		if (val === 0) {
+			this.destroy();
+		}
 		this.#num = val;
 	}
 
@@ -67,6 +70,11 @@ export default class Goods extends Movable {
 
 	get start() {
 		return this.#start;
+	}
+
+	destroy() {
+		super.destroy();
+		currentGame.events.emit('goods-destroyed', { goods: this });
 	}
 
 	setPath(targetHex, Grid = Hex.Grid) {

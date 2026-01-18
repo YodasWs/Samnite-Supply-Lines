@@ -12,22 +12,42 @@ const GoodsSpriteOptions = {
 	yoyo: false,
 };
 
-currentGame.events.on('goods-destroyed', (evt) => {
-	destroyGoodsSprite(evt.detail.goods);
-});
-
 class GoodsViewDetail {
 	#hex
 	#scene
+	#spoilageOffset = 32;
+	#spoilageSprite
 	#sprite
 	#moving = false;
+	#goodsType
 
 	constructor(goods, scene) {
 		this.#hex = goods.hex;
 		this.#scene = scene;
 		this.#sprite = scene.add.sprite(this.#hex.x, this.#hex.y, `goods.${goods.goodsType}`)
 			.setDepth(Depths.goods);
-		this.#sprite.setVisible(FogOfWar.isHexVisible(currentGame.players[0], goods.hex));
+		if (goods.goodsType === 'food') {
+			// TODO: Change spoilage color
+			this.#spoilageSprite = scene.add.sprite(this.#hex.x, this.#hex.y - this.#spoilageOffset, 'spoilage-timer')
+				.setDepth(Depths.goods).setScale(0.6).setTint(0x00ff00);
+			goods.events.on('rounds-updated', (evt) => {
+				console.log('Sam, rounds-updated called', evt.detail.percentage);
+				const percentage = evt.detail.percentage;
+				if (percentage <= 20) {
+					this.#spoilageSprite.setTintFill(0xff0000);
+				} else if (percentage <= 60) {
+					this.#spoilageSprite.setTintFill(0xffff00);
+				} else {
+					this.#spoilageSprite.setTintFill(0x00ff00);
+				}
+			});
+		}
+		this.#goodsType = goods.goodsType;
+		this.setVisible(FogOfWar.isHexVisible(currentGame.players[0], goods.hex));
+
+		goods.events.on('destroyed', (evt) => {
+			destroyGoodsSprite(goods);
+		});
 	}
 
 	get hex() {
@@ -40,6 +60,9 @@ class GoodsViewDetail {
 	set moving(val) {
 		if (typeof val !== 'boolean') {
 			throw new TypeError('GoodsViewDetail.moving expects to be assigned a boolean!');
+		}
+		if (this.#goodsType === 'food') {
+			this.#spoilageSprite.setVisible(this.#sprite.visible && !val);
 		}
 		this.#moving = val;
 	}
@@ -61,9 +84,32 @@ class GoodsViewDetail {
 
 	set x(val) {
 		this.#sprite.setX(val);
+		if (this.#goodsType === 'food') {
+			this.#spoilageSprite.setX(val);
+		}
 	}
 	set y(val) {
-		this.#sprite.setX(val);
+		this.#sprite.setY(val);
+		if (this.#goodsType === 'food') {
+			this.#spoilageSprite.setY(val - this.#spoilageOffset);
+		}
+	}
+
+	destroy() {
+		this.#sprite.destroy();
+		if (this.#goodsType === 'food') {
+			this.#spoilageSprite.destroy();
+		}
+	}
+
+	setVisible(visible) {
+		if (typeof visible !== 'boolean') {
+			throw new TypeError('GoodsViewDetail.setVisible expects a boolean!');
+		}
+		this.#sprite.setVisible(visible);
+		if (this.#goodsType === 'food') {
+			this.#spoilageSprite.setVisible(!this.#moving && visible);
+		}
 	}
 
 	update(hex) {
@@ -106,6 +152,7 @@ export function renderGoods() {
 			detail.update(goods.hex);
 			promise.then(() => {
 				detail.moving = false;
+				goods.events.emit('moved', { promise });
 				currentGame.events.emit('goods-moved', { goods, promise });
 			});
 		}
@@ -119,7 +166,8 @@ export function renderGoods() {
 			}
 		});
 		if (goodsMap.size === 0) return;
-		Phaser.Actions.GridAlign([...goodsMap.values()].filter(d => !d.moving).map(d => d.sprite), {
+		// TODO: Replace with a better grid alignment that handles moving Goods
+		gridAlign(goodsMap.values().filter(d => !d.moving), {
 			position: Phaser.Display.Align.CENTER,
 			width: gridWidth,
 			cellHeight: 32,
@@ -130,20 +178,50 @@ export function renderGoods() {
 	});
 }
 
+function gridAlign(iterable, {
+	x = 0,
+	y = 0,
+	width = 1,
+	cellWidth = 32,
+	cellHeight = 32,
+} = {}) {
+	let index = 0;
+
+	for (const item of iterable) {
+		const col = index % width;
+		const row = Math.floor(index / width);
+
+		const baseX = x + col * cellWidth + cellWidth / 2;
+		const baseY = y + row * cellHeight + cellHeight / 2;
+
+		// If the item is a composite view, let it decide how to position itself
+		if (typeof item.setPosition === 'function') {
+			item.setPosition(baseX, baseY);
+		} else {
+			// Otherwise assume it has x/y setters
+			item.x = baseX;
+			item.y = baseY;
+		}
+
+		index++;
+	}
+}
+
 currentGame.events.on('hex-visible', (evt) => {
 	const { hex } = evt.detail;
 	goodsSprites.forEach((detail, goods) => {
-		if (detail.hex === hex) detail.sprite.setVisible(true);
+		if (detail.hex === hex) detail.setVisible(true);
 	});
 });
 
 currentGame.events.on('hex-hidden', (evt) => {
 	const { hex } = evt.detail;
 	goodsSprites.forEach((detail, goods) => {
-		if (detail.hex === hex) detail.sprite.setVisible(false);
+		if (detail.hex === hex) detail.setVisible(false);
 	});
 });
 
+// TODO: Need to tween to where the goods will be positioned on the new hex, not to the center
 function moveGoodsSprite(goods, oldHex) {
 	const detail = goodsSprites.get(goods);
 	if (!detail) return;
@@ -154,12 +232,14 @@ function moveGoodsSprite(goods, oldHex) {
 	const newVisible = FogOfWar.isHexVisible(currentGame.players[0], goods.hex);
 
 	if (!oldVisible && !newVisible) {
-		detail.sprite.setX(goods.hex.x).setY(goods.hex.y).setVisible(false);
+		detail.x = goods.hex.x;
+		detail.y = goods.hex.y;
+		detail.setVisible(false);
 		return Promise.resolve();
 	}
 
 	if (oldVisible && !newVisible) {
-		detail.sprite.setVisible(true);
+		detail.setVisible(true);
 		return new Promise((resolve) => {
 			detail.scene.tweens.add({
 				targets: detail.sprite,
@@ -169,7 +249,9 @@ function moveGoodsSprite(goods, oldHex) {
 				duration: duration / 2,
 				yoyo: false,
 				onComplete(tween) {
-					detail.sprite.setX(goods.hex.x).setY(goods.hex.y).setVisible(false);
+					detail.x = goods.hex.x;
+					detail.y = goods.hex.y;
+					detail.setVisible(false);
 					tween.destroy();
 					resolve();
 				},
@@ -179,10 +261,12 @@ function moveGoodsSprite(goods, oldHex) {
 
 	if (!oldVisible && newVisible) {
 		return new Promise((resolve) => {
-			detail.sprite.setX((goods.hex.x + oldHex.x) / 2).setY((goods.hex.y + oldHex.y) / 2).setVisible(false);
+			detail.x = (goods.hex.x + oldHex.x) / 2;
+			detail.y = (goods.hex.y + oldHex.y) / 2;
+			detail.setVisible(false);
 			setTimeout(resolve, duration / 2);
 		}).then(() => {
-			detail.sprite.setVisible(true);
+			detail.setVisible(true);
 			return new Promise((resolve) => {
 				detail.scene.tweens.add({
 					targets: detail.sprite,
@@ -201,7 +285,7 @@ function moveGoodsSprite(goods, oldHex) {
 	}
 
 	return new Promise((resolve) => {
-		detail.sprite.setVisible(true);
+		detail.setVisible(true);
 		detail.scene.tweens.add({
 			targets: detail.sprite,
 			x: goods.hex.x,
@@ -221,7 +305,7 @@ export function destroyGoodsSprite(goods) {
 	if (!goods.deleted) return; // Only remove view if Goods is truly deleted
 	if (!goodsSprites.has(goods)) return; // Already removed
 	const detail = goodsSprites.get(goods);
-	detail.sprite.setVisible(false);
-	detail.sprite.destroy();
+	detail.setVisible(false);
+	detail.destroy();
 	goodsSprites.delete(goods);
 }

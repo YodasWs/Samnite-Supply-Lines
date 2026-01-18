@@ -77,7 +77,7 @@ describe('Goods class', () => {
 		});
 	});
 
-	it('does not destroy itself on goods-moved event if it did not reach destination', async (t) => {
+	it('does not destroy itself on moved event if it did not reach destination', async (t) => {
 		const testGrid = new Honeycomb.Grid(mockHex, Honeycomb.rectangle({ width: 3, height: 1 }));
 		const targetHex = testGrid.getHex({ row: 0, col: 2 });
 		const startHex = testGrid.getHex({ row: 0, col: 0 });
@@ -93,13 +93,13 @@ describe('Goods class', () => {
 		goods.moveOneTurn();
 
 		const promise = Promise.resolve();
-		currentGame.events.emit('goods-moved', { goods, promise });
+		goods.events.emit('moved', { promise });
 
 		await promise; // wait for finally()
 		assert.equal(spy.mock.callCount(), 0, 'Goods.destroy was called');
 	});
 
-	it('destroys itself on goods-moved event if it reached destination', async (t) => {
+	it('destroys itself on moved event if it reached destination', async (t) => {
 		const testGrid = new Honeycomb.Grid(mockHex, Honeycomb.rectangle({ width: 3, height: 1 }));
 		const targetHex = testGrid.getHex({ row: 0, col: 1 });
 		const startHex = testGrid.getHex({ row: 0, col: 0 });
@@ -117,7 +117,7 @@ describe('Goods class', () => {
 		goods.moveOneTurn();
 
 		const promise = Promise.resolve();
-		currentGame.events.emit('goods-moved', { goods, promise });
+		goods.events.emit('moved', { promise });
 
 		await promise; // wait for finally()
 		assert.true(destroyed, 'Goods not destroyed');

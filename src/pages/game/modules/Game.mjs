@@ -15,7 +15,7 @@ const GoodsSpriteOptions = {
 	yoyo: false,
 };
 
-class Emitter extends EventTarget {
+export class Emitter extends EventTarget {
 	on(eventName, listener) {
 		this.addEventListener(eventName, listener);
 	}

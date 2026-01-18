@@ -216,6 +216,9 @@ export default {
 				this.load.image(`goods.${key}`, `img/resources/${resource.tile}.png`);
 			}
 		});
+
+		this.load.image('spoilage-timer', 'img/resources/hourglass.png');
+
 		// Load images for Laborers
 		Object.keys(GameConfig.World.laborers).forEach((laborerType) => {
 			this.load.image(`laborers.${laborerType}`, `img/laborers/${laborerType}.png`);

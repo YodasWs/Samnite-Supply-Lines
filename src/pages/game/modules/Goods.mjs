@@ -2,9 +2,10 @@ import * as GameConfig from '../modules/Config.mjs';
 
 import * as Hex from './Hex.mjs';
 import Movable from './Movable.mjs';
-import { currentGame } from './Game.mjs';
+import { currentGame, Emitter } from './Game.mjs';
 
 export default class Goods extends Movable {
+	#emitter = new Emitter();
 	#goodsType;
 	#num;
 	#rounds = 0;
@@ -27,14 +28,17 @@ export default class Goods extends Movable {
 		this.#num = num;
 		this.#start = hex;
 
-		currentGame.events.on('goods-moved', (evt) => {
-			const { goods, promise } = evt.detail;
-			if (goods !== this) return;
-			if (Hex.isHex(this.#target) && this.hex !== this.#target) return;
-			promise.finally(() => {
-				this.destroy();
-			});
+		this.events.on('moved', (evt) => {
+			if (Hex.isHex(this.#target) && this.hex === this.#target) {
+				evt.detail.promise.finally(() => {
+					this.destroy();
+				});
+			}
 		});
+	}
+
+	get events() {
+		return this.#emitter;
 	}
 
 	get goodsType() {
@@ -63,8 +67,15 @@ export default class Goods extends Movable {
 		}
 		this.#rounds = val;
 		// Limit lifespan of Food goods on the board
-		if (this.#goodsType === 'food' && this.#rounds >= Goods.MaxFoodRounds) {
-			this.destroy();
+		if (this.#goodsType === 'food') {
+			this.events.emit('rounds-updated', {
+				rounds: this.#rounds,
+				maxRounds: this.MaxFoodRounds,
+				percentage: (Goods.MaxFoodRounds - this.#rounds) / Goods.MaxFoodRounds * 100,
+			});
+			if (this.#rounds >= Goods.MaxFoodRounds) {
+				this.destroy();
+			}
 		}
 	}
 
@@ -75,6 +86,7 @@ export default class Goods extends Movable {
 	destroy() {
 		super.destroy();
 		currentGame.events.emit('goods-destroyed', { goods: this });
+		this.events.emit('destroyed');
 	}
 
 	setPath(targetHex, Grid = Hex.Grid) {

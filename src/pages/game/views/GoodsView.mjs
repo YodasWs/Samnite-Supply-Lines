@@ -12,26 +12,51 @@ const GoodsSpriteOptions = {
 	yoyo: false,
 };
 
+const offsets = {
+	spoilage: {
+		x: 0,
+		y: -32,
+	},
+	num: {
+		x: 12,
+		y: 0,
+	},
+};
+
 class GoodsViewDetail {
+	#container
 	#hex
 	#scene
 	#spoilageOffset = 32;
 	#spoilageSprite
 	#sprite
+	#numText
 	#moving = false;
 	#goodsType
 
 	constructor(goods, scene) {
 		this.#hex = goods.hex;
+		const x = this.#hex.x;
+		const y = this.#hex.y;
 		this.#scene = scene;
-		this.#sprite = scene.add.sprite(this.#hex.x, this.#hex.y, `goods.${goods.goodsType}`)
+		this.#sprite = scene.add.sprite(x, y, `goods.${goods.goodsType}`)
 			.setDepth(Depths.goods);
+		this.#numText = scene.add.text(x + offsets.num.x, y + offsets.num.y, goods.num.toString(), {
+			font: '20pt Trebuchet MS',
+			align: 'right',
+			color: 'white',
+			stroke: 'black',
+			weight: 'bold',
+			strokeThickness: 4,
+		}).setDepth(Depths.goods + 1);
+		this.#container = [this.#sprite, this.#numText];
+
 		if (goods.goodsType === 'food') {
 			// TODO: Change spoilage color
-			this.#spoilageSprite = scene.add.sprite(this.#hex.x, this.#hex.y - this.#spoilageOffset, 'spoilage-timer')
-				.setDepth(Depths.goods).setScale(0.6).setTint(0x00ff00);
+			this.#spoilageSprite = scene.add.sprite(x + offsets.spoilage.x, y + offsets.spoilage.y, 'spoilage-timer')
+				.setDepth(Depths.goods).setScale(0.6).setTintFill(0x00ff00);
+			this.#container.push(this.#spoilageSprite);
 			goods.events.on('rounds-updated', (evt) => {
-				console.log('Sam, rounds-updated called', evt.detail.percentage);
 				const percentage = evt.detail.percentage;
 				if (percentage <= 20) {
 					this.#spoilageSprite.setTintFill(0xff0000);
@@ -43,10 +68,39 @@ class GoodsViewDetail {
 			});
 		}
 		this.#goodsType = goods.goodsType;
+
+		scene.cameras.getCamera('mini').ignore(this.#container);
+
 		this.setVisible(FogOfWar.isHexVisible(currentGame.players[0], goods.hex));
 
-		goods.events.on('destroyed', (evt) => {
+		// Set up event listeners
+		const fnOnNumUpdated = (evt) => {
+			this.#numText.setText(evt.detail.num.toString());
+		};
+		const fnOnZoomChanged = (zoom) => {
+			switch (zoom) {
+				case 0.4:
+					this.#numText.setFontSize('30pt');
+					break;
+				case 0.5:
+					this.#numText.setFontSize('30pt');
+					break;
+				case 0.7:
+					this.#numText.setFontSize('30pt');
+					break;
+				case 1:
+					this.#numText.setFontSize('30pt');
+					break;
+			}
+		};
+
+		goods.events.on('num-updated', fnOnNumUpdated);
+		scene.events.on('zoom-changed', fnOnZoomChanged);
+		goods.events.once('destroyed', (evt) => {
 			destroyGoodsSprite(goods);
+			// Clean up event listeners
+			goods.events.off('num-updated', fnOnNumUpdated);
+			scene.events.off('zoom-changed', fnOnZoomChanged);
 		});
 	}
 
@@ -61,6 +115,7 @@ class GoodsViewDetail {
 		if (typeof val !== 'boolean') {
 			throw new TypeError('GoodsViewDetail.moving expects to be assigned a boolean!');
 		}
+		this.#numText.setVisible(this.#sprite.visible && !val);
 		if (this.#goodsType === 'food') {
 			this.#spoilageSprite.setVisible(this.#sprite.visible && !val);
 		}
@@ -84,22 +139,26 @@ class GoodsViewDetail {
 
 	set x(val) {
 		this.#sprite.setX(val);
+		this.#numText.setX(val + offsets.num.x);
 		if (this.#goodsType === 'food') {
-			this.#spoilageSprite.setX(val);
+			this.#spoilageSprite.setX(val + offsets.spoilage.x);
 		}
 	}
 	set y(val) {
 		this.#sprite.setY(val);
+		this.#numText.setY(val + offsets.num.y);
 		if (this.#goodsType === 'food') {
-			this.#spoilageSprite.setY(val - this.#spoilageOffset);
+			this.#spoilageSprite.setY(val + offsets.spoilage.y);
 		}
 	}
 
 	destroy() {
-		this.#sprite.destroy();
-		if (this.#goodsType === 'food') {
-			this.#spoilageSprite.destroy();
-		}
+		this.#container.forEach(obj => obj.destroy());
+	}
+
+	setPosition(x, y) {
+		this.x = x;
+		this.y = y;
 	}
 
 	setVisible(visible) {
@@ -107,6 +166,7 @@ class GoodsViewDetail {
 			throw new TypeError('GoodsViewDetail.setVisible expects a boolean!');
 		}
 		this.#sprite.setVisible(visible);
+		this.#numText.setVisible(!this.#moving && visible);
 		if (this.#goodsType === 'food') {
 			this.#spoilageSprite.setVisible(!this.#moving && visible);
 		}
@@ -222,6 +282,7 @@ currentGame.events.on('hex-hidden', (evt) => {
 });
 
 // TODO: Need to tween to where the goods will be positioned on the new hex, not to the center
+// TODO: Need to also tween the num text and spoilage sprite
 function moveGoodsSprite(goods, oldHex) {
 	const detail = goodsSprites.get(goods);
 	if (!detail) return;

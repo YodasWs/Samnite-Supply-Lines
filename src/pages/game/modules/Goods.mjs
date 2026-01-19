@@ -56,6 +56,7 @@ export default class Goods extends Movable {
 			this.destroy();
 		}
 		this.#num = val;
+		this.events.emit('num-updated', { num: this.#num });
 	}
 
 	get rounds() {

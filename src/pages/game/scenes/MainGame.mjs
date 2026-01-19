@@ -57,6 +57,7 @@ currentGame.events.on('zoom-in', () => {
 	}
 	hideActionSprites();
 	ShowActiveUnitHelpSprites();
+	MainGameScene.events.emit('zoom-changed', MainGameScene.cameras.main.zoom);
 });
 currentGame.events.on('zoom-out', () => {
 	const currentZoom = MainGameScene.cameras.main.zoom;
@@ -74,6 +75,7 @@ currentGame.events.on('zoom-out', () => {
 	}
 	hideActionSprites();
 	ShowActiveUnitHelpSprites();
+	MainGameScene.events.emit('zoom-changed', MainGameScene.cameras.main.zoom);
 });
 
 export function ShowActiveUnitHelpSprites(event) {

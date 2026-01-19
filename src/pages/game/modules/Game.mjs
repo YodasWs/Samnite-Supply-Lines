@@ -19,6 +19,11 @@ export class Emitter extends EventTarget {
 	on(eventName, listener) {
 		this.addEventListener(eventName, listener);
 	}
+	once(eventName, listener) {
+		this.addEventListener(eventName, listener, {
+			once: true,
+		});
+	}
 	off(eventName, listener) {
 		this.removeEventListener(eventName, listener);
 	}

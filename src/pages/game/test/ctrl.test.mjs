@@ -150,8 +150,8 @@ describe('Faction class', () => {
 });
 
 describe('Laborer class', () => {
-	test('generateRomanBritishName returns a non-empty string', () => {
-		const name = LaborerUtils.generateRomanBritishName();
+	test('generateRomanName returns a non-empty string', () => {
+		const name = LaborerUtils.generateRomanName();
 		assert.equal(typeof name, 'string');
 		assert.true(name.length > 0);
 	});

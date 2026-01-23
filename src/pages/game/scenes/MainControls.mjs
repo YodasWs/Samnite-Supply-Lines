@@ -13,7 +13,7 @@ export default {
 	key: sceneKey,
 	autoStart: true,
 	preload() {
-		this.load.image('coins', `img/resources/coins.png`);
+		this.load.image('coins', 'img/resources/coins.png');
 	},
 	create() {
 		const graphics = currentGame.graphics.mainControls = this.add.graphics({ x: 0, y: 0 });

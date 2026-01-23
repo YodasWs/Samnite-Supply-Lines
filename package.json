@@ -4,6 +4,7 @@
 	"description": "Simple logistics tycoon game",
 	"private": true,
 	"main": "gulpfile.js",
+	"type": "module",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/YodasWs/Samnite-Supply-Lines.git"
@@ -40,11 +41,14 @@
 		"gulp-rm-lines": "<1.0.0",
 		"gulp-run-command": "<1.0.0",
 		"gulp-sass": "^6.0.0",
-		"gulp-sass-lint": "^1.4.0",
 		"gulp-ssi": "^0.1.3",
 		"gulp-strip-css-comments": "^2.0.0",
 		"honeycomb-grid": "^4.0.0-beta.8",
+		"postcss": "^8.5.6",
+		"postcss-scss": "^4.0.9",
 		"sass": "^1.85.1",
+		"stylelint": "^16.26.1",
+		"stylelint-config-recommended-scss": "^16.0.2",
 		"vinyl-named": "^1.1.0",
 		"webpack": "^5.84.1",
 		"webpack-stream": "^7.0.0",

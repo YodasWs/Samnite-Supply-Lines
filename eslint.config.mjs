@@ -1,6 +1,6 @@
-const { defineConfig } = require('eslint/config');
+import { defineConfig } from 'eslint/config';
 
-module.exports = defineConfig([
+export default defineConfig([
 	{
 		languageOptions: {
 			sourceType: 'module',
@@ -19,6 +19,13 @@ module.exports = defineConfig([
 	'tab',
 	{
 		'SwitchCase': 1,
+	},
+],
+'quotes': [
+	2,
+	'single',
+	{
+		'avoidEscape': true,
 	},
 ],
 'space-before-function-paren': 0,

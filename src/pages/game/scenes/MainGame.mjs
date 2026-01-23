@@ -59,6 +59,7 @@ currentGame.events.on('zoom-in', () => {
 	}
 	hideActionSprites();
 	ShowActiveUnitHelpSprites();
+	MainGameScene.events.emit('zoom-changed', MainGameScene.cameras.main.zoom);
 });
 currentGame.events.on('zoom-out', () => {
 	const currentZoom = MainGameScene.cameras.main.zoom;
@@ -76,6 +77,7 @@ currentGame.events.on('zoom-out', () => {
 	}
 	hideActionSprites();
 	ShowActiveUnitHelpSprites();
+	MainGameScene.events.emit('zoom-changed', MainGameScene.cameras.main.zoom);
 });
 
 export function ShowActiveUnitHelpSprites(event) {
@@ -221,6 +223,9 @@ export default {
 				this.load.image(`goods.${key}`, `img/resources/${resource.tile}.png`);
 			}
 		});
+
+		this.load.image('spoilage-timer', 'img/resources/hourglass.png');
+
 		// Load images for Laborers
 		Object.keys(GameConfig.World.laborers).forEach((laborerType) => {
 			this.load.image(`laborers.${laborerType}`, `img/laborers/${laborerType}.png`);

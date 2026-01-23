@@ -110,6 +110,73 @@
 		"Marcus Valerius Corvus",
 		"Cnaeus Flavius"
 	],
+	"LaborerNames": {
+		"praenomina": {
+			"0.5": [
+				"Marcus",
+				"Gaius",
+				"Lucius",
+				"Publius",
+				"Quintus",
+				"Titus",
+				"Tiberius",
+				"Aulus",
+				"Sextus",
+				"Gnaeus"
+			],
+			"0.75": [
+				"Spurius",
+				"Numerius",
+				"Servius",
+				"Decimus"
+			],
+			"1": [
+				"Mamercus",
+				"Appius",
+				"Agrippa",
+				"Opiter"
+			]
+		},
+		"cognomina": {
+			"0.3": [
+				"Cincinnatus",
+				"Barbatus",
+				"Rufus",
+				"Naso",
+				"Longus",
+				"Brutus",
+				"Flavus",
+				"Niger",
+				"Paullus",
+				"Crassus",
+				"Varus",
+				"Cicero"
+			],
+			"0.5": [
+				"Blandus",
+				"Cato",
+				"Celer",
+				"Durus",
+				"Quietus",
+				"Severus"
+			],
+			"0.75": [
+				"Agricola",
+				"Silvanus",
+				"Montanus",
+				"Pratensis",
+				"Ripanus",
+				"Paludatus"
+			],
+			"1": [
+				"Sabinus",
+				"Picenus",
+				"Etruscus",
+				"Campanus",
+				"Samnis"
+			]
+		}
+	},
 	"NationNames": [
 		"Roman Republic"
 	],

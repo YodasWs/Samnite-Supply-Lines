@@ -1,35 +1,22 @@
 import City from './City.mjs';
 import * as Hex from './Hex.mjs';
 import Tile from './Tile.mjs';
+import World from '../../../json/world.mjs';
 
 // Thanks to Microsoft Copilot for this name generator!
-export function generateRomanBritishName() {
-	const praenomina = [
-		'Gaius', 'Lucius', 'Marcus', 'Quintus', 'Titus', 'Publius', 'Aulus', 'Sextus',
-	];
+export function generateRomanName() {
+	const nameParts = [];
+	for (const namePart in World.LaborerNames) {
+		const rand = Math.random();
+		for (const key in World.LaborerNames[namePart]) {
+			if (rand < Number.parseFloat(key)) {
+				nameParts.push(World.LaborerNames[namePart][key]);
+				break;
+			}
+		}
+	}
 
-	const celticNames = [
-		'Bran', 'Cai', 'Elen', 'Rhiannon', 'Taran', 'Mabon', 'Nia', 'Owain',
-	];
-
-	const cognomina = [
-		'Agricola', 'Felix', 'Silvanus', 'Varus', 'Florus', 'Crispus', 'Severus', 'Vitalis',
-	];
-
-	const epithets = [
-		'the Smith', 'of Londinium', 'the Younger', 'the Red', 'from Camulodunum', 'the Hunter',
-	];
-
-	const first = Math.random() < 0.5
-		? praenomina[Math.floor(Math.random() * praenomina.length)]
-		: celticNames[Math.floor(Math.random() * celticNames.length)];
-
-	const last = cognomina[Math.floor(Math.random() * cognomina.length)];
-	const epithet = Math.random() < 0.3
-		? epithets[Math.floor(Math.random() * epithets.length)]
-		: '';
-
-	return `${first} ${last} ${epithet}`.trim();
+	return nameParts.join(' ');
 }
 
 function Laborer({
@@ -39,7 +26,7 @@ function Laborer({
 	tile,
 	type,
 } = {}) {
-	const name = generateRomanBritishName();
+	const name = generateRomanName();
 	if (City.isCity(city)) {
 		Object.defineProperty(this, 'city', {
 			enumerable: true,

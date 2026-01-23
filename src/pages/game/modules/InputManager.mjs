@@ -9,7 +9,7 @@ export default class InputManager {
 	#sceneKey
 	#shiftKey
 
-    constructor(scene) {
+	constructor(scene) {
 		if (!(scene instanceof globalThis.Phaser.Scene)) {
 			throw new Error('InputManager requires a Phaser.Scene instance');
 		}
@@ -334,9 +334,9 @@ export default class InputManager {
 		});
 
 		this.enableKeyboardInput();
-    }
+	}
 
-    destroy() {
-        // Clean up listeners when the scene stops
-    }
+	destroy() {
+		// Clean up listeners when the scene stops
+	}
 }

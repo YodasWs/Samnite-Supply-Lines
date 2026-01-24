@@ -2,7 +2,7 @@ import * as GameConfig from '../modules/Config.mjs';
 
 import * as Hex from './Hex.mjs';
 import Movable from './Movable.mjs';
-import { currentGame, Emitter } from './Game.mjs';
+import { currentGame, Emitter, Tester } from './Game.mjs';
 
 export default class Goods extends Movable {
 	#emitter = new Emitter();
@@ -29,7 +29,7 @@ export default class Goods extends Movable {
 		this.#start = hex;
 
 		this.events.on('moved', (evt) => {
-			if (Hex.isHex(this.#target) && this.hex === this.#target) {
+			if (Tester.isHex(this.#target) && this.hex === this.#target) {
 				evt.detail.promise.finally(() => {
 					this.destroy();
 				});

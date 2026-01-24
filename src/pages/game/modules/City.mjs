@@ -4,9 +4,7 @@ import * as GameConfig from './Config.mjs';
 import * as Hex from './Hex.mjs';
 import Housing from './Housing.mjs';
 import Faction from './Faction.mjs';
-import Laborer from './Laborer.mjs';
-import Nation from './Nation.mjs';
-import { currentGame } from './Game.mjs';
+import { currentGame, Tester } from './Game.mjs';
 
 export default class City {
 	#hex;
@@ -20,12 +18,12 @@ export default class City {
 		nation,
 		Grid = Hex.Grid,
 	}) {
-		if (!Nation.isNation(nation)) {
+		if (!Tester.isNation(nation)) {
 			throw new TypeError('City expects to be assigned object instance of Nation!');
 		}
 		this.#nation = nation;
 
-		if (!Hex.isHex(hex)) {
+		if (!Tester.isHex(hex)) {
 			throw new TypeError('City expects to be assigned object instance of Hex!');
 		}
 		this.#hex = hex;
@@ -37,7 +35,7 @@ export default class City {
 			start: [ hex.q, hex.r ],
 			radius: 1,
 		})).forEach((adjacentHex) => {
-			if (!Hex.isHex(adjacentHex)) return;
+			if (!Tester.isHex(adjacentHex)) return;
 			adjacentHex.tile.claimTerritory(nation, 100);
 		});
 
@@ -46,7 +44,7 @@ export default class City {
 			center: [ hex.q, hex.r ],
 			radius: 2,
 		})).forEach((waterHex) => {
-			if (!Hex.isHex(waterHex)) return;
+			if (!Tester.isHex(waterHex)) return;
 			waterHex.tile.claimTerritory(nation, waterHex.terrain.isWater ? 50 : 0);
 		});
 
@@ -113,7 +111,7 @@ export default class City {
 	}
 
 	addToQueue({ faction, unitType }) {
-		if (!Faction.isFaction(faction)) {
+		if (!Tester.isFaction(faction)) {
 			throw new TypeError('City.addToQueue expects to be assigned object instance of Faction!');
 		}
 		if (!(unitType in GameConfig.World.units)) {

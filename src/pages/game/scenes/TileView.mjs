@@ -1,9 +1,7 @@
 import * as Honeycomb from 'honeycomb-grid';
 import * as GameConfig from '../modules/Config.mjs';
 
-import { currentGame } from '../modules/Game.mjs';
-import * as Hex from '../modules/Hex.mjs';
-import Tile from '../modules/Tile.mjs';
+import { currentGame, Tester } from '../modules/Game.mjs';
 
 import InputManager from '../modules/InputManager.mjs';
 
@@ -32,7 +30,7 @@ export default {
 	preload() {
 	},
 	create({ hex }) {
-		if (!Hex.isHex(hex) || !Tile.isTile(hex.tile)) {
+		if (!Tester.isHex(hex) || !Tester.isTile(hex.tile)) {
 			currentGame.scenes.resume('mainGameScene');
 			return;
 		}

@@ -1,8 +1,6 @@
-import { currentGame } from '../modules/Game.mjs';
+import { currentGame, Tester } from '../modules/Game.mjs';
 
 import { ActionHandler } from '../modules/Actions.mjs';
-import * as Hex from '../modules/Hex.mjs';
-import Tile from '../modules/Tile.mjs';
 import Unit, * as UnitUtils from '../modules/Unit.mjs';
 import { FogOfWar } from '../views/TileView.mjs';
 
@@ -111,7 +109,7 @@ currentGame.events.on('doing-action', () => {
 
 function OpenTileMenu(evt) {
 	const hex = evt.detail?.hex;
-	if (!Hex.isHex(hex) || !Tile.isTile(hex.tile)) return;
+	if (!Tester.isHex(hex) || !Tester.isTile(hex.tile)) return;
 	if (!FogOfWar.isHexExplored(currentGame.players[0], hex)) return;
 
 	CloseTileMenu();

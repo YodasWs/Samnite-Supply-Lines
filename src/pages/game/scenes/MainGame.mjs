@@ -4,7 +4,7 @@ import City from '../modules/City.mjs';
 import * as Hex from '../modules/Hex.mjs';
 import Tile from '../modules/Tile.mjs';
 import * as UnitUtils from '../modules/Unit.mjs';
-import { currentGame, GoodsOnBoard } from '../modules/Game.mjs';
+import { currentGame, GoodsOnBoard, Tester } from '../modules/Game.mjs';
 
 import InputManager from '../modules/InputManager.mjs';
 
@@ -153,7 +153,7 @@ export function ShowActiveUnitHelpSprites(event) {
 currentGame.events.on('hex-clicked', (evt) => {
 	// Highlight the clicked tile
 	const hex = evt.detail?.hex || evt.detail?.unit?.hex;
-	if (!Hex.isHex(hex) || !Tile.isTile(hex.tile)) return;
+	if (!Tester.isHex(hex) || !Tester.isTile(hex.tile)) return;
 	if (!TileView.FogOfWar.isHexExplored(currentGame.players[0], hex)) return;
 	ActionSprites.spriteOnActiveTile.setActive(true).setVisible(true).setPosition(hex.x, hex.y).setDepth(GameConfig.depths.actionSprites);
 	MainGameScene.cameras.main.pan(hex.x, hex.y, 500, 'Linear', true);

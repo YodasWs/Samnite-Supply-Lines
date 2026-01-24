@@ -5,6 +5,7 @@ import City from './City.mjs';
 import Faction from './Faction.mjs';
 import Goods from './Goods.mjs';
 import Laborer from './Laborer.mjs';
+import Nation from './Nation.mjs';
 import Tile from './Tile.mjs';
 import * as Hex from './Hex.mjs';
 
@@ -30,6 +31,9 @@ export class Tester {
 	}
 	static isLaborer(obj) {
 		return obj instanceof Laborer;
+	}
+	static isNation(obj) {
+		return obj instanceof Nation;
 	}
 	static isTile(obj) {
 		return obj instanceof Tile;
@@ -109,7 +113,7 @@ export const currentGame = {
 
 		// Check Cities
 		Hex.Grid.forEach((hex) => {
-			if (City.isCity(hex.city)) {
+			if (Tester.isCity(hex.city)) {
 				const city = hex.city;
 				Hex.Grid.traverse(Honeycomb.spiral({
 					start: [ hex.q, hex.r ],
@@ -129,7 +133,7 @@ export const currentGame = {
 			throw new TypeError(`Unknown player ${intPlayer}`);
 		}
 		this.currentPlayer = this.players[intPlayer];
-		if (!(this.currentPlayer instanceof Faction)) {
+		if (!Tester.isFaction(this.currentPlayer)) {
 			throw new TypeError(`Player ${intPlayer} is not a Faction Object`);
 		}
 
@@ -154,8 +158,8 @@ export const currentGame = {
 	} = {}) {
 		// TODO: Mark only the boundaries of territory
 		// https://www.redblobgames.com/x/1541-hex-region-borders/
-		(Hex.isHex(thisHex) ? [thisHex] : Hex.Grid).forEach((hex) => {
-			if (!Tile.isTile(hex.tile) || !(hex.tile.faction instanceof Faction)) return;
+		(Tester.isHex(thisHex) ? [thisHex] : Hex.Grid).forEach((hex) => {
+			if (!Tester.isTile(hex.tile) || !Tester.isFaction(hex.tile.faction)) return;
 			if (fill === false) {
 				graphics.lineStyle(lineWidth, hex.tile.faction.color);
 			} else {
@@ -191,7 +195,7 @@ export const currentGame = {
 		// TODO: Collect list of villages and cities
 		const cities = [];
 		Hex.Grid.forEach((hex) => {
-			if (City.isCity(hex.city)) {
+			if (Tester.isCity(hex.city)) {
 				cities.push(hex);
 			}
 		});
@@ -231,7 +235,7 @@ export const currentGame = {
 				}
 			});
 
-			if (Hex.isHex(closestHex) && City.isCity(closestHex.city)) {
+			if (Tester.isHex(closestHex) && Tester.isCity(closestHex.city)) {
 				if (GoodsItem.setPath(closestHex) !== null) {
 					GoodsItem.prepareForNewTurn();
 					GoodsItem.moveOneTurn();

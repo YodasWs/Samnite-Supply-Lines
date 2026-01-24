@@ -1,4 +1,4 @@
-import { currentGame } from './Game.mjs';
+import { currentGame, Tester } from './Game.mjs';
 
 import * as Hex from './Hex.mjs';
 import Unit from './Unit.mjs';
@@ -246,7 +246,7 @@ export default class InputManager {
 					// Show territorial claims
 					const graphics = currentGame.graphics.gfxClaims = this.#scene.add.graphics({ x: 0, y: 0 }).setDepth(GameConfig.depths.territoryLines - 1);
 					Hex.Grid.forEach((hex) => {
-						if (!Tile.isTile(hex.tile)) return;
+						if (!Tester.isTile(hex.tile)) return;
 						if (!(hex.tile.claims() instanceof Map)) return;
 						hex.tile.claims().forEach((intClaim, player) => {
 							if (hex.tile.player === player) return;
@@ -325,7 +325,7 @@ export default class InputManager {
 			// Treat as click
 			if (!isDragging) {
 				const hex = Hex.Grid.pointToHex({ x: pointer.worldX, y: pointer.worldY });
-				if (Hex.isHex(hex)) {
+				if (Tester.isHex(hex)) {
 					currentGame.events.emit('hex-clicked', { hex });
 				}
 			}

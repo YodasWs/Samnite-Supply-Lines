@@ -4,7 +4,7 @@ import * as Hex from './Hex.mjs';
 import Faction from './Faction.mjs';
 import Movable from './Movable.mjs';
 import { ActionHandler } from './Actions.mjs';
-import { currentGame } from './Game.mjs';
+import { currentGame, Tester } from './Game.mjs';
 
 export function actionTileCoordinates(action, row, col) {
 	switch (action) {
@@ -49,7 +49,7 @@ export default class Unit extends Movable {
 		hex,
 		faction,
 	}) {
-		if (!Faction.isFaction(faction)) {
+		if (!Tester.isFaction(faction)) {
 			throw new TypeError('Unit expects to be assigned a Faction!');
 		}
 		const base = GameConfig.World.units[unitType] ?? throwTypeError(`Unknown unit '${unitType}'`)
@@ -120,10 +120,10 @@ export default class Unit extends Movable {
 		if (typeof action !== 'string') {
 			throw new TypeError('Unit.setAction expects action to be a string!');
 		}
-		if (Hex.isHex(params.hex) && params.hex === this.hex) {
+		if (Tester.isHex(params.hex) && params.hex === this.hex) {
 			ActionHandler.handle(action, { unit: this, ...params });
 		}
-		if (Hex.isHex(params.hex) && params.hex !== this.hex) {
+		if (Tester.isHex(params.hex) && params.hex !== this.hex) {
 			this.#savedAction = {
 				action,
 				params,

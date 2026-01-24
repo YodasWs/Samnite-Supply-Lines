@@ -1,8 +1,7 @@
 import * as GameConfig from '../modules/Config.mjs';
 
-import City from './City.mjs';
 import Unit from './Unit.mjs';
-import { currentGame } from './Game.mjs';
+import { currentGame, Tester } from './Game.mjs';
 
 export function getFactionColor(index) {
 	return [
@@ -45,7 +44,7 @@ export default class Faction {
 
 		currentGame.events.on('goods-moved', (evt) => {
 			const { goods, promise } = evt.detail;
-			if (goods.faction !== this || !City.isCity(goods.hex.city)) return;
+			if (goods.faction !== this || !Tester.isCity(goods.hex.city)) return;
 			// Deliver Food to City
 			promise.then(() => {
 				console.log('Sam, Faction received', goods.num, 'goods for', GameConfig.World.ResourceValues[goods.goodsType], 'each');

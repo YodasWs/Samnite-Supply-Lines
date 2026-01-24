@@ -1,14 +1,8 @@
 import * as GameConfig from './Config.mjs';
-
-import City from './City.mjs';
-import Faction from './Faction.mjs';
-import * as Hex from './Hex.mjs';
-import Laborer from './Laborer.mjs';
-import Nation from './Nation.mjs';
-import { currentGame } from './Game.mjs';
+import { currentGame, Tester } from './Game.mjs';
 
 function isValidImprovement(hex, improvement, builtImprovement) {
-	if (!Hex.isHex(hex)) return false;
+	if (!Tester.isHex(hex)) return false;
 	if (typeof improvement !== 'string' || improvement === '') return false;
 	// Improvement must exist
 	if (!(improvement in GameConfig.World.improvements)) return false;
@@ -17,7 +11,7 @@ function isValidImprovement(hex, improvement, builtImprovement) {
 	// Improvement must be valid for terrain
 	if (!(hex.terrain.terrain in GameConfig.World.improvements[improvement]?.terrains)) return false;
 	// Cannot build improvement in city
-	if (City.isCity(hex.city)) return false;
+	if (Tester.isCity(hex.city)) return false;
 	return true;
 }
 
@@ -35,7 +29,7 @@ export default class Tile {
 	#food = 0;
 
 	constructor({ hex }) {
-		if (!Hex.isHex(hex)) {
+		if (!Tester.isHex(hex)) {
 			throw new TypeError('Tile expects to be assigned object instance of Hex!');
 		}
 		this.#hex = hex;
@@ -68,7 +62,7 @@ export default class Tile {
 		return this.#laborers;
 	}
 	set laborers(val) {
-		if (!Laborer.isLaborer(val)) {
+		if (!Tester.isLaborer(val)) {
 			throw new TypeError('Tile.laborers expects to be assigned object instance of Laborer!');
 		}
 		this.#laborers.add(val);
@@ -92,9 +86,9 @@ export default class Tile {
 	claims(factionOrNation, claimIncrement) {
 		// Get numerical value of Player's claim
 		let map = null;
-		if (Faction.isFaction(factionOrNation)) {
+		if (Tester.isFaction(factionOrNation)) {
 			map = 'faction';
-		} else if (Nation.isNation(factionOrNation)) {
+		} else if (Tester.isNation(factionOrNation)) {
 			map = 'nation';
 		}
 		if (map in this.#claims) {
@@ -110,14 +104,14 @@ export default class Tile {
 	claimTerritory(factionOrNation, claimIncrement = 0) {
 		if (Number.isFinite(claimIncrement) && claimIncrement !== 0) {
 			let prevPlayer = undefined;
-			if (Nation.isNation(factionOrNation) && Nation.isNation(this.nation)) {
+			if (Tester.isNation(factionOrNation) && Tester.isNation(this.nation)) {
 				prevPlayer = this.nation.index;
-			} else if (Faction.isFaction(factionOrNation) && Faction.isFaction(this.faction)) {
+			} else if (Tester.isFaction(factionOrNation) && Tester.isFaction(this.faction)) {
 				prevPlayer = this.faction.index;
 			}
 			this.claims(factionOrNation, claimIncrement);
 			// Only update territory lines if faction owner has changed
-			if (Faction.isFaction(factionOrNation) && this.faction?.index !== prevPlayer) {
+			if (Tester.isFaction(factionOrNation) && this.faction?.index !== prevPlayer) {
 				// TODO: Use an event or something instead of direct reference to currentGame
 				currentGame.markTerritory(this.hex, {
 					graphics: currentGame.graphics.territoryFills,
@@ -153,7 +147,7 @@ export default class Tile {
 				...GameConfig.World.improvements[val].terrains[this.#hex.terrain.terrain],
 				key: val,
 			};
-			if (faction instanceof Faction) {
+			if (Tester.isFaction(faction)) {
 				this.claimTerritory(faction, 10);
 				this.#objImprovement.faction = faction;
 			}

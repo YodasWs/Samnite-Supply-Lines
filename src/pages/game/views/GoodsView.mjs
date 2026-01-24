@@ -1,7 +1,6 @@
 import { depths as Depths } from '../modules/Config.mjs';
-import { currentGame } from '../modules/Game.mjs';
+import { currentGame, Tester } from '../modules/Game.mjs';
 import { FogOfWar } from './TileView.mjs';
-import * as Hex from '../modules/Hex.mjs';
 
 const HexGoodsGrids = new Map(); // key: Hex instance → Map of Goods instance → GoodsViewDetail
 
@@ -173,7 +172,7 @@ class GoodsViewDetail {
 	}
 
 	update(hex) {
-		if (Hex.isHex(hex)) {
+		if (Tester.isHex(hex)) {
 			this.#hex = hex;
 		}
 	}

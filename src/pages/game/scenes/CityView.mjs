@@ -1,10 +1,8 @@
 import * as Honeycomb from 'honeycomb-grid';
 import * as GameConfig from '../modules/Config.mjs';
 
-import City from '../modules/City.mjs';
 import * as Hex from '../modules/Hex.mjs';
-import Tile from '../modules/Tile.mjs';
-import { currentGame } from '../modules/Game.mjs';
+import { currentGame, Tester } from '../modules/Game.mjs';
 
 import InputManager from '../modules/InputManager.mjs';
 
@@ -26,7 +24,7 @@ export default {
 	preload() {
 	},
 	create(data) {
-		if (!Hex.isHex(data.hex) || !Tile.isTile(data.hex.tile) || !City.isCity(data.hex.city)) {
+		if (!Tester.isHex(data.hex) || !Tester.isTile(data.hex.tile) || !Tester.isCity(data.hex.city)) {
 			this.scene.resume('mainGameScene');
 			return;
 		}

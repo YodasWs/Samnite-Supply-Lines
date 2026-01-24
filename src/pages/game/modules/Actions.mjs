@@ -2,11 +2,9 @@ import * as Honeycomb from 'honeycomb-grid';
 import * as GameConfig from '../modules/Config.mjs';
 
 import * as Hex from './Hex.mjs';
-import City from './City.mjs';
 import Laborer from './Laborer.mjs';
-import Tile from './Tile.mjs';
 import Unit from './Unit.mjs';
-import { currentGame } from './Game.mjs';
+import { currentGame, Tester } from './Game.mjs';
 
 // TODO: Base action object:
 /*
@@ -91,10 +89,10 @@ const ActionValidators = {
 		return currentGame.currentPlayer === currentGame.players[0];
 	},
 	hexTileValid({ hex }) {
-		return Hex.isHex(hex) && Tile.isTile(hex.tile);
+		return Tester.isHex(hex) && Tester.isTile(hex.tile);
 	},
 	isCityTile({ hex }) {
-		return City.isCity(hex.city);
+		return Tester.isCity(hex.city);
 	},
 	isFarmBuildable({ hex, unit }) {
 		if (!ActionValidators.hexTileValid({ hex })) return false;

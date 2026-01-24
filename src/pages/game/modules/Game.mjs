@@ -15,6 +15,27 @@ const GoodsSpriteOptions = {
 	yoyo: false,
 };
 
+export class Tester {
+	static isCity(obj) {
+		return obj instanceof City;
+	}
+	static isFaction(obj) {
+		return obj instanceof Faction;
+	}
+	static isGoods(obj) {
+		return obj instanceof Goods;
+	}
+	static isHex(obj) {
+		return obj instanceof Honeycomb.Hex;
+	}
+	static isLaborer(obj) {
+		return obj instanceof Laborer;
+	}
+	static isTile(obj) {
+		return obj instanceof Tile;
+	}
+}
+
 export class Emitter extends EventTarget {
 	on(eventName, listener) {
 		this.addEventListener(eventName, listener);

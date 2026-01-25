@@ -1847,6 +1847,7 @@ __metadata:
     "@babel/core": "npm:^7.20.2"
     "@babel/preset-env": "npm:^7.20.2"
     "@yodasws/gulp-pattern-replace": "npm:^1.1.1"
+    "@yodasws/gulp-stylelint": "npm:^1.0.0"
     babel-loader: "npm:^9.1.0"
     file-exists: "npm:^4.0.0"
     font-awesome: "npm:^4.7.0"
@@ -1887,6 +1888,20 @@ __metadata:
     replacestream: "npm:^4.0.0"
     through2: "npm:^2.0.1"
   checksum: 10c0/6ed821c8cd197e8f7382a9374ebf44c76c70f2cceec1b5d0a5886507a9f93426a8fba60704b2631dd2e8ce3fc5c23f222ec11b9877d9ea7927e6911461c5324d
+  languageName: node
+  linkType: hard
+
+"@yodasws/gulp-stylelint@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@yodasws/gulp-stylelint@npm:1.0.0"
+  dependencies:
+    plugin-error: "npm:^2.0.1"
+    through2: "npm:^4.0.2"
+  peerDependencies:
+    postcss: ^8.5.6
+    postcss-scss: ^4.0.9
+    stylelint: ^16.26.1
+  checksum: 10c0/a593e584e05b03fe99591ef5f147ffc1fa871d9a83611ad749f2033bf23d16ff619a6321a4b96494b77ebdf8c90cf6f21291c4a79b246d8ed33ad1c6b8ef4524
   languageName: node
   linkType: hard
 
@@ -5759,7 +5774,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"readable-stream@npm:2 || 3, readable-stream@npm:^3.1.1, readable-stream@npm:^3.4.0":
+"readable-stream@npm:2 || 3, readable-stream@npm:3, readable-stream@npm:^3.1.1, readable-stream@npm:^3.4.0":
   version: 3.6.2
   resolution: "readable-stream@npm:3.6.2"
   dependencies:
@@ -6836,6 +6851,15 @@ __metadata:
     inherits: "npm:^2.0.4"
     readable-stream: "npm:2 || 3"
   checksum: 10c0/8ea17efa2ce5b78ef5c52d08e29d0dbdad9c321c2add5192bba3434cae25b2319bf9cdac1c54c3bfbd721438a30565ca6f3f19eb79f62341dafc5a12429d2ccc
+  languageName: node
+  linkType: hard
+
+"through2@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "through2@npm:4.0.2"
+  dependencies:
+    readable-stream: "npm:3"
+  checksum: 10c0/3741564ae99990a4a79097fe7a4152c22348adc4faf2df9199a07a66c81ed2011da39f631e479fdc56483996a9d34a037ad64e76d79f18c782ab178ea9b6778c
   languageName: node
   linkType: hard
 

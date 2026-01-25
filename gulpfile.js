@@ -105,6 +105,9 @@ plugins.webpack = require('webpack-stream');
 plugins.named = require('vinyl-named');
 plugins['connect.reload'] = plugins.connect.reload;
 
+import lintCss from '@yodasws/gulp-stylelint';
+plugins.lintCss = lintCss;
+
 // more options at https://github.com/postcss/autoprefixer#options
 const browsers = [
 	// browser strings detailed at https://github.com/ai/browserslist#queries
@@ -181,6 +184,11 @@ const options = {
 		port: argv.port,
 	},
 
+	lintCss: {
+		configFile: '.stylelint.config.mjs',
+		failAfterError: true,
+		fix: false,
+	},
 	sort: {
 		css: [
 			'scss/**/*.{sa,sc,c}ss',
@@ -309,6 +317,7 @@ function runTasks(task) {
 		if (subtask === 'lintES') {
 			// Linting requires special formatting
 			stream = stream.pipe(plugins[subtask].format());
+			stream = stream.pipe(plugins[subtask].failAfterError());
 		}
 	});
 
@@ -326,6 +335,7 @@ function runTasks(task) {
 			'!**/min.css',
 		],
 		tasks: [
+			'lintCss',
 			'sort',
 			'concat',
 			'compileSass',
@@ -398,12 +408,12 @@ function runTasks(task) {
 	});
 });
 
-const lintSass = gulp.series(
-	plugins.cli([
-		'npx stylelint "src/**/*.{sass,scss,css}" "!src/**/*.min.css" --config .stylelint.config.mjs --allow-empty-input --ignore-path .stylelintignore',
-	]),
-);
-
+function lintSass() {
+	return gulp.src([
+		argv.files || 'src/**/*.{sass,scss,css}',
+		'!src/**/*.min.css',
+	]).pipe(plugins.lintCss(options.lintCss || {}));
+}
 
 export function lintTests() {
 	return gulp.src([
@@ -480,7 +490,7 @@ gulp.task('reload', (done) => {
 gulp.task('watch', (done) => {
 	gulp.watch('./src/**/*.{sa,sc,c}ss', {
 		usePolling: true,
-	}, gulp.series(lintSass, 'compile:sass', 'reload'));
+	}, gulp.series('compile:sass', 'reload'));
 	gulp.watch('./lib/*.js', {
 		usePolling: true,
 	}, gulp.series('transfer:res', 'reload'));

@@ -7,11 +7,11 @@ import TileView from "./TileView.mjs";
 import TitleScreen from "./TitleScreen.mjs";
 
 export default {
-  TitleScreen,
-  MainMenu,
-  MainGame,
-  CityView,
-  MainControls,
-  TechTree,
-  TileView,
+	TitleScreen,
+	MainMenu,
+	MainGame,
+	CityView,
+	MainControls,
+	TechTree,
+	TileView,
 };

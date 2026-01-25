@@ -9,81 +9,81 @@ import Movable from "./Movable.mjs";
 import Unit from "./Unit.mjs";
 
 class gameHex extends Honeycomb.defineHex({
-  dimensions: GameConfig.tileWidth / 2,
-  orientation: Honeycomb.Orientation.FLAT,
-  origin: "topLeft",
+	dimensions: GameConfig.tileWidth / 2,
+	orientation: Honeycomb.Orientation.FLAT,
+	origin: "topLeft",
 }) {
-  f_cost;
-  h_cost;
-  g_cost;
+	f_cost;
+	h_cost;
+	g_cost;
 }
 
 export function isHex(hex) {
-  return hex instanceof Honeycomb.Hex;
+	return hex instanceof Honeycomb.Hex;
 }
 
 export const Grid = new Honeycomb.Grid(
-  gameHex,
-  Honeycomb.rectangle({ width: 15, height: 6 }),
+	gameHex,
+	Honeycomb.rectangle({ width: 15, height: 6 }),
 );
 
 export function isValidPath(path, GridInstance = Grid) {
-  if (
-    !Array.isArray(path) ||
+	if (
+		!Array.isArray(path) ||
     path.length === 0 ||
     path.some((hex) => !isHex(hex))
-  ) {
-    return false;
-  }
-  for (let i = 1; i < path.length; i++) {
-    const prevHex = path[i - 1];
-    const currentHex = path[i];
-    if (GridInstance.distance(prevHex, currentHex) !== 1) {
-      return false;
-    }
-  }
-  return true;
+	) {
+		return false;
+	}
+	for (let i = 1; i < path.length; i++) {
+		const prevHex = path[i - 1];
+		const currentHex = path[i];
+		if (GridInstance.distance(prevHex, currentHex) !== 1) {
+			return false;
+		}
+	}
+	return true;
 }
 
 export function IsLegalMove(targetHex, movable) {
-  if (!isHex(targetHex)) return false;
-  if (!Movable.isInstanceofMovable(movable)) return false;
+	if (!isHex(targetHex)) return false;
+	if (!Movable.isInstanceofMovable(movable)) return false;
 
-  if (Unit.isUnit(movable)) {
-    if (
-      City.isCity(targetHex.city) &&
+	if (Unit.isUnit(movable)) {
+		if (
+			City.isCity(targetHex.city) &&
       targetHex.city.nation !== movable.faction.nation
-    ) {
-      if (!movable.attack || !movable.attackCities) return false;
-    }
+		) {
+			if (!movable.attack || !movable.attackCities) return false;
+		}
 
-    let tileUnits;
-    if (false) {
-      if (!movable.attack) return false;
-      if (units[tileUnits[0]].index == "britton" && movable.faction == "roman")
-        return false;
-    }
-  } else if (Goods.isGoods(movable)) {
-  }
+		let tileUnits;
+		if (false) {
+			if (!movable.attack) return false;
+			if (units[tileUnits[0]].index == "britton" && movable.faction == "roman")
+				return false;
+		}
+	} else if (Goods.isGoods(movable)) {
+	}
 
-  const moves = MovementCost(movable, targetHex);
-  if (!Number.isFinite(moves)) return false;
-  return moves <= movable.baseMovementPoints;
+	const moves = MovementCost(movable, targetHex);
+	if (!Number.isFinite(moves)) return false;
+	return moves <= movable.baseMovementPoints;
 }
 
 export function MovementCost(movable, nextHex, thisHex = movable.hex) {
-  if (!isHex(nextHex)) {
-    return Infinity;
-  }
-  if (!Movable.isInstanceofMovable(movable)) {
-    return Infinity;
-  }
-  if (nextHex.terrain.isWater && !movable.moveOnWater) {
-    return movable.movementCosts[nextHex.terrain.terrain] ?? Infinity;
-  }
-  return (
-    movable.movementCosts[nextHex.terrain.terrain] ??
+	if (!isHex(nextHex)) {
+		return Infinity;
+	}
+	if (!Movable.isInstanceofMovable(movable)) {
+		return Infinity;
+	}
+	if (nextHex.terrain.isWater && !movable.moveOnWater) {
+		return movable.movementCosts[nextHex.terrain.terrain] ?? Infinity;
+	}
+	return (
+		movable.movementCosts[nextHex.terrain.terrain] ??
     nextHex.terrain.movementCost ??
     Infinity
-  );
+	);
 }

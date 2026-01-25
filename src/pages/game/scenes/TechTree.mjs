@@ -1,6 +1,6 @@
 export default {
-  key: "techTree",
-  preload() {},
-  create() {},
-  update() {},
+	key: "techTree",
+	preload() {},
+	create() {},
+	update() {},
 };

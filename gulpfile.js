@@ -25,7 +25,7 @@ import { hideBin } from "yargs/helpers";
 import yargs from "yargs";
 const argv = yargs(hideBin(process.argv))
   .usage(
-    "\n\x1b[1mUsage:\x1b[0m gulp \x1b[36m<command>\x1b[0m \x1b[34m[options]\x1b[0m"
+    "\n\x1b[1mUsage:\x1b[0m gulp \x1b[36m<command>\x1b[0m \x1b[34m[options]\x1b[0m",
   )
   .command(
     "*",
@@ -37,7 +37,7 @@ const argv = yargs(hideBin(process.argv))
         default: 3000,
         alias: "p",
       },
-    }
+    },
   )
   .command("serve", "Run server", {
     port: {
@@ -79,7 +79,7 @@ const argv = yargs(hideBin(process.argv))
   })
   .command(
     "transfer-files",
-    "Transfer all static assets and resources to docs folder"
+    "Transfer all static assets and resources to docs folder",
   )
   .command("watch", "Watch files for changes to recompile")
   .help("?")
@@ -97,7 +97,6 @@ const plugins = require("gulp-load-plugins")({
     "gulp-autoprefixer": "prefixCSS",
     "gulp-run-command": "cli",
     "gulp-eslint-new": "lintES",
-    "gulp-sass-lint": "lintSass",
     "gulp-htmlmin": "compileHTML",
     "gulp-babel": "compileJS",
     "gulp-order": "sort",
@@ -155,86 +154,6 @@ const options = {
     removeScriptTypeAttributes: true,
     removeStyleLinkTypeAttributes: true,
     useShortDoctype: true,
-  },
-  lintSass: {
-    files: {
-      ignore: "**/*.min.css",
-    },
-    rules: {
-      "extends-before-mixins": 1,
-      "extends-before-declarations": 1,
-      "placeholder-in-extend": 1,
-      "mixins-before-declarations": 1,
-      "one-declaration-per-line": 1,
-      "empty-line-between-blocks": 1,
-      "single-line-per-selector": 1,
-      "no-attribute-selectors": 0,
-      "no-color-hex": 0,
-      "no-color-keywords": 0,
-      "no-color-literals": 1,
-      "no-combinators": 0,
-      "no-css-comments": 0,
-      "no-debug": 1,
-      "no-disallowed-properties": 1,
-      "no-duplicate-properties": [1, { exclude: ["display"] }],
-      "no-empty-rulesets": 0,
-      "no-extends": 0,
-      "no-ids": 0,
-      "no-important": 1,
-      "no-invalid-hex": 1,
-      "no-mergeable-selectors": 1,
-      "no-misspelled-properties": 1,
-      "no-qualifying-elements": 0,
-      "no-trailing-whitespace": 1,
-      "no-trailing-zero": 1,
-      "no-transition-all": 0,
-      "no-universal-selectors": 0,
-      "no-url-domains": 1,
-      "no-url-protocols": 1,
-      "no-vendor-prefixes": 1,
-      "no-warn": 1,
-      "property-units": 1,
-      "declarations-before-nesting": 1,
-      "force-attribute-nesting": 0,
-      "force-element-nesting": 0,
-      "force-pseudo-nesting": 0,
-      "class-name-format": 1,
-      "function-name-format": 1,
-      "id-name-format": 1,
-      "mixin-name-format": 1,
-      "placeholder-name-format": 1,
-      "variable-name-format": 1,
-      "attribute-quotes": 1,
-      "bem-depth": 1,
-      "border-zero": 1,
-      "brace-style": 1,
-      "clean-import-paths": 1,
-      "empty-args": 1,
-      "hex-length": [2, { style: "long" }],
-      "hex-notation": [1, { style: "uppercase" }],
-      indentation: [2, { size: 2 }],
-      "leading-zero": [2, { include: true }],
-      "max-line-length": 0,
-      "max-file-line-count": 0,
-      "nesting-depth": [1, { "max-depth": 4 }],
-      "property-sort-order": 0,
-      "pseudo-element": 1,
-      quotes: [1, { style: "double" }],
-      "shorthand-values": 1,
-      "url-quotes": 1,
-      "variable-for-property": 1,
-      "zero-unit": 1,
-      "space-after-comma": 1,
-      "space-before-colon": 1,
-      "space-after-colon": 1,
-      "space-before-brace": 1,
-      "space-before-bang": 1,
-      "space-after-bang": 1,
-      "space-between-parens": 1,
-      "space-around-operator": 1,
-      "trailing-semicolon": 2,
-      "final-newline": 2,
-    },
   },
   prefixCSS: {
     cascade: false,
@@ -388,7 +307,7 @@ function runTasks(task) {
         }
         this.emit("end");
       });
-    if (["lintSass", "lintES"].includes(subtask)) {
+    if (subtask === "lintES") {
       // Linting requires special formatting
       stream = stream.pipe(plugins[subtask].format());
     }
@@ -408,7 +327,6 @@ function runTasks(task) {
       "!**/min.css",
     ],
     tasks: [
-      "lintSass",
       "sort",
       "concat",
       "compileSass",
@@ -460,12 +378,11 @@ function runTasks(task) {
   });
 });
 
-export function lintSass() {
-  return gulp
-    .src(["src/**/*.{sa,sc,c}ss", "!**/*.min.css", "!**/min.css"])
-    .pipe(plugins.lintSass(options.lintSass || {}))
-    .pipe(plugins.lintSass.format());
-}
+const lintSass = gulp.series(
+  plugins.cli([
+    'npx stylelint "src/**/*.{sass,scss,css}" "!src/**/*.min.css" --config .stylelint.config.mjs --allow-empty-input --ignore-path .stylelintignore',
+  ]),
+);
 
 export function lintTests() {
   return gulp
@@ -478,7 +395,7 @@ export function lintTests() {
     .pipe(plugins.lintES.format());
 }
 
-export function lintJs() {
+function lintJs() {
   return gulp
     .src([
       "src/**/*.{js,mjs}",
@@ -494,26 +411,26 @@ export function lintJs() {
 export { lintJs as "lint:js" };
 export { lintSass as "lint:css" };
 
-export const lint = gulp.parallel(lintSass, lintJs);
+gulp.task("lint", gulp.parallel(lintSass, lintJs));
 
 gulp.task("transfer:fonts", () =>
   gulp
     .src(["./node_modules/font-awesome/fonts/fontawesome-webfont.*"])
-    .pipe(gulp.dest(path.join(options.dest, "fonts")))
+    .pipe(gulp.dest(path.join(options.dest, "fonts"))),
 );
 
 gulp.task("transfer:res", () =>
-  gulp.src(["./lib/*.js"]).pipe(gulp.dest(path.join(options.dest, "res")))
+  gulp.src(["./lib/*.js"]).pipe(gulp.dest(path.join(options.dest, "res"))),
 );
 
 gulp.task(
   "transfer-files",
-  gulp.parallel("transfer:assets", "transfer:fonts", "transfer:res")
+  gulp.parallel("transfer:assets", "transfer:fonts", "transfer:res"),
 );
 
 gulp.task(
   "test:js",
-  gulp.series(plugins.cli([`node --test ${argv.files || ""}`]))
+  gulp.series(plugins.cli([`node --test ${argv.files || ""}`])),
 );
 
 gulp.task("test", gulp.parallel("test:js"));
@@ -524,7 +441,7 @@ gulp.task("compile:js", gulp.series("test:js", "bundle:js", "minify:js"));
 
 gulp.task(
   "compile",
-  gulp.parallel("compile:html", "compile:js", "compile:sass", "transfer-files")
+  gulp.parallel("compile:html", "compile:js", "compile:sass", "transfer-files"),
 );
 gulp.task("reload", (done) => {
   gulp.src("docs/").pipe(plugins["connect.reload"]());
@@ -537,28 +454,28 @@ gulp.task("watch", (done) => {
     {
       usePolling: true,
     },
-    gulp.series("compile:sass", "reload")
+    gulp.series(lintSass, "compile:sass", "reload"),
   );
   gulp.watch(
     "./lib/*.js",
     {
       usePolling: true,
     },
-    gulp.series("transfer:res", "reload")
+    gulp.series("transfer:res", "reload"),
   );
   gulp.watch(
     "./src/**/*.{js,mjs,json}",
     {
       usePolling: true,
     },
-    gulp.series("compile:js", "reload")
+    gulp.series(lintJs, "compile:js", "reload"),
   );
   gulp.watch(
     "./src/**/*.html",
     {
       usePolling: true,
     },
-    gulp.series("compile:html", "reload")
+    gulp.series("compile:html", "reload"),
   );
   done();
 });
@@ -610,10 +527,10 @@ gulp.task(
         return plugins
           .newFile("app.json", JSON.stringify(site, null, "\t"), { src: true })
           .pipe(gulp.dest(`./src`));
-      }
+      },
     ),
-    plugins.cli([`git status`])
-  )
+    plugins.cli([`git status`]),
+  ),
 );
 
 gulp.task(
@@ -667,13 +584,16 @@ gulp.task(
         return plugins
           .newFile("app.json", JSON.stringify(site, null, "\t"), { src: true })
           .pipe(gulp.dest(`./src`));
-      }
+      },
     ),
-    plugins.cli([`git status`])
-  )
+    plugins.cli([`git status`]),
+  ),
 );
 
 gulp.task("compile:scss", gulp.series("compile:sass"));
 gulp.task("compile:css", gulp.series("compile:sass"));
 
-gulp.task("default", gulp.series("compile", gulp.parallel("serve", "watch")));
+gulp.task(
+  "default",
+  gulp.series("lint", "compile", gulp.parallel("serve", "watch")),
+);

@@ -10,231 +10,231 @@ import * as Hex from "./Hex.mjs";
 
 export let GoodsOnBoard = [];
 const GoodsSpriteOptions = {
-  ease: "Linear",
-  duration: 1000,
-  yoyo: false,
+	ease: "Linear",
+	duration: 1000,
+	yoyo: false,
 };
 
 class Emitter extends EventTarget {
-  on(eventName, listener) {
-    this.addEventListener(eventName, listener);
-  }
-  off(eventName, listener) {
-    this.removeEventListener(eventName, listener);
-  }
-  emit(eventName, detail = {}) {
-    this.dispatchEvent(new CustomEvent(eventName, { detail }));
-  }
+	on(eventName, listener) {
+		this.addEventListener(eventName, listener);
+	}
+	off(eventName, listener) {
+		this.removeEventListener(eventName, listener);
+	}
+	emit(eventName, detail = {}) {
+		this.dispatchEvent(new CustomEvent(eventName, { detail }));
+	}
 }
 
 export const currentGame = {
-  events: new Emitter(),
-  players: [],
-  turn: 0,
-  activeUnit: null,
-  currentPlayer: null,
-  intCurrentPlayer: null,
-  graphics: {},
-  startRound() {
-    this.players.forEach((player) => {
-      // Reset each player's units array to remove deleted units
-      player.units = player.units;
-    });
-    Hex.Grid.forEach((hex) => {
-      // Adjust each Nations' and Factions' claims on Territory
-      this.nations.forEach((nation) => {
-        if (hex.tile.nation === nation) {
-          // Strengthen top claimant's claim
-          hex.tile.claimTerritory(nation, 1);
-        } else if (hex.tile.claims(nation) > 0) {
-          // Weaken foreign claimant's claim
-          hex.tile.claimTerritory(nation, -1);
-        }
-      });
-      this.players.forEach((player) => {
-        if (hex.tile.faction === player) {
-          // Strengthen top claimant's claim
-          hex.tile.claimTerritory(player, 1);
-        } else if (hex.tile.claims(player) > 0) {
-          // Weaken foreign claimant's claim
-          hex.tile.claimTerritory(player, -1);
-        }
-      });
+	events: new Emitter(),
+	players: [],
+	turn: 0,
+	activeUnit: null,
+	currentPlayer: null,
+	intCurrentPlayer: null,
+	graphics: {},
+	startRound() {
+		this.players.forEach((player) => {
+			// Reset each player's units array to remove deleted units
+			player.units = player.units;
+		});
+		Hex.Grid.forEach((hex) => {
+			// Adjust each Nations' and Factions' claims on Territory
+			this.nations.forEach((nation) => {
+				if (hex.tile.nation === nation) {
+					// Strengthen top claimant's claim
+					hex.tile.claimTerritory(nation, 1);
+				} else if (hex.tile.claims(nation) > 0) {
+					// Weaken foreign claimant's claim
+					hex.tile.claimTerritory(nation, -1);
+				}
+			});
+			this.players.forEach((player) => {
+				if (hex.tile.faction === player) {
+					// Strengthen top claimant's claim
+					hex.tile.claimTerritory(player, 1);
+				} else if (hex.tile.claims(player) > 0) {
+					// Weaken foreign claimant's claim
+					hex.tile.claimTerritory(player, -1);
+				}
+			});
 
-      hex.tile.food = 0;
+			hex.tile.food = 0;
 
-      // Produce Food
-      if (hex.tile.laborers.size > 0) {
-        let food = 0;
-        food += hex.terrain.food || 0;
-        food += hex.tile.improvement.food || 0;
-        if (food > 0) {
-          // TODO: Add some particle effect to show food being generated and not stacked
-          const goods = new Goods("food", {
-            num: food,
-            hex,
-          });
-          GoodsOnBoard.push(goods);
-          this.events.emit("goods-created", { goods });
-        }
-      }
-    });
+			// Produce Food
+			if (hex.tile.laborers.size > 0) {
+				let food = 0;
+				food += hex.terrain.food || 0;
+				food += hex.tile.improvement.food || 0;
+				if (food > 0) {
+					// TODO: Add some particle effect to show food being generated and not stacked
+					const goods = new Goods("food", {
+						num: food,
+						hex,
+					});
+					GoodsOnBoard.push(goods);
+					this.events.emit("goods-created", { goods });
+				}
+			}
+		});
 
-    // Check Cities
-    Hex.Grid.forEach((hex) => {
-      if (City.isCity(hex.city)) {
-        const city = hex.city;
-        Hex.Grid.traverse(
-          Honeycomb.spiral({
-            start: [hex.q, hex.r],
-            radius: 2,
-          }),
-        ).forEach((hex) => {});
-      }
-    });
+		// Check Cities
+		Hex.Grid.forEach((hex) => {
+			if (City.isCity(hex.city)) {
+				const city = hex.city;
+				Hex.Grid.traverse(
+					Honeycomb.spiral({
+						start: [hex.q, hex.r],
+						radius: 2,
+					}),
+				).forEach((hex) => {});
+			}
+		});
 
-    // Start Round
-    this.turn++;
-    this.startTurn(0);
-  },
-  startTurn(intPlayer) {
-    if (!Number.isFinite(intPlayer)) {
-      throw new TypeError(`Unknown player ${intPlayer}`);
-    }
-    this.currentPlayer = this.players[intPlayer];
-    if (!(this.currentPlayer instanceof Faction)) {
-      throw new TypeError(`Player ${intPlayer} is not a Faction Object`);
-    }
+		// Start Round
+		this.turn++;
+		this.startTurn(0);
+	},
+	startTurn(intPlayer) {
+		if (!Number.isFinite(intPlayer)) {
+			throw new TypeError(`Unknown player ${intPlayer}`);
+		}
+		this.currentPlayer = this.players[intPlayer];
+		if (!(this.currentPlayer instanceof Faction)) {
+			throw new TypeError(`Player ${intPlayer} is not a Faction Object`);
+		}
 
-    this.intCurrentPlayer = intPlayer; // Reset each unit's movement points
-    this.currentPlayer.units.forEach((unit) => {
-      unit.prepareForNewTurn();
-    });
-    // Activate first unit
-    this.currentPlayer.activateUnit(0);
-  },
-  markTerritory(
-    thisHex = null,
-    {
-      graphics = this.graphics.territoryLines,
-      lineOffset = 0.97,
-      offsetX = 0,
-      offsetY = 0,
-      fill = false,
-      lineWidth = 5,
-    } = {},
-  ) {
-    (Hex.isHex(thisHex) ? [thisHex] : Hex.Grid).forEach((hex) => {
-      if (!Tile.isTile(hex.tile) || !(hex.tile.faction instanceof Faction))
-        return;
-      if (fill === false) {
-        graphics.lineStyle(lineWidth, hex.tile.faction.color);
-      } else {
-        graphics.fillStyle(hex.tile.faction.color);
-      }
-      graphics.beginPath();
-      // Draw points closer to center of hex
-      const [firstCorner, ...otherCorners] = hex.corners.map((point) =>
-        GameConfig.lineShift(point, hex, lineOffset),
-      );
-      graphics.moveTo(firstCorner.x + offsetX, firstCorner.y + offsetY);
-      otherCorners.forEach(({ x, y }) => {
-        graphics.lineTo(x + offsetX, y + offsetY);
-      });
-      graphics.closePath()[fill === false ? "strokePath" : "fillPath"]();
-    });
-  },
-  endTurn() {
-    this.intCurrentPlayer++;
-    if (this.intCurrentPlayer >= this.players.length) {
-      this.endRound();
-      return;
-    }
-    this.startTurn(this.intCurrentPlayer);
-  },
-  endRound() {
-    const delaysForEndRound = [];
-    this.betweenRounds = true;
+		this.intCurrentPlayer = intPlayer; // Reset each unit's movement points
+		this.currentPlayer.units.forEach((unit) => {
+			unit.prepareForNewTurn();
+		});
+		// Activate first unit
+		this.currentPlayer.activateUnit(0);
+	},
+	markTerritory(
+		thisHex = null,
+		{
+			graphics = this.graphics.territoryLines,
+			lineOffset = 0.97,
+			offsetX = 0,
+			offsetY = 0,
+			fill = false,
+			lineWidth = 5,
+		} = {},
+	) {
+		(Hex.isHex(thisHex) ? [thisHex] : Hex.Grid).forEach((hex) => {
+			if (!Tile.isTile(hex.tile) || !(hex.tile.faction instanceof Faction))
+				return;
+			if (fill === false) {
+				graphics.lineStyle(lineWidth, hex.tile.faction.color);
+			} else {
+				graphics.fillStyle(hex.tile.faction.color);
+			}
+			graphics.beginPath();
+			// Draw points closer to center of hex
+			const [firstCorner, ...otherCorners] = hex.corners.map((point) =>
+				GameConfig.lineShift(point, hex, lineOffset),
+			);
+			graphics.moveTo(firstCorner.x + offsetX, firstCorner.y + offsetY);
+			otherCorners.forEach(({ x, y }) => {
+				graphics.lineTo(x + offsetX, y + offsetY);
+			});
+			graphics.closePath()[fill === false ? "strokePath" : "fillPath"]();
+		});
+	},
+	endTurn() {
+		this.intCurrentPlayer++;
+		if (this.intCurrentPlayer >= this.players.length) {
+			this.endRound();
+			return;
+		}
+		this.startTurn(this.intCurrentPlayer);
+	},
+	endRound() {
+		const delaysForEndRound = [];
+		this.betweenRounds = true;
 
-    // TODO: Collect list of villages and cities
-    const cities = [];
-    Hex.Grid.forEach((hex) => {
-      if (City.isCity(hex.city)) {
-        cities.push(hex);
-      }
-    });
+		// TODO: Collect list of villages and cities
+		const cities = [];
+		Hex.Grid.forEach((hex) => {
+			if (City.isCity(hex.city)) {
+				cities.push(hex);
+			}
+		});
 
-    // Move Food towards nearest City
-    GoodsOnBoard.forEach((GoodsItem, i) => {
-      let { faction, hex, num: food, goodsType } = GoodsItem;
-      if (goodsType !== "food") {
-        return;
-      }
-      if (food <= 0) {
-        GoodsItem.destroy();
-        return;
-      }
+		// Move Food towards nearest City
+		GoodsOnBoard.forEach((GoodsItem, i) => {
+			let { faction, hex, num: food, goodsType } = GoodsItem;
+			if (goodsType !== "food") {
+				return;
+			}
+			if (food <= 0) {
+				GoodsItem.destroy();
+				return;
+			}
 
-      // Leave Food on tile for Laborers
-      if (
-        hex.tile.laborers.size > 0 &&
+			// Leave Food on tile for Laborers
+			if (
+				hex.tile.laborers.size > 0 &&
         hex.tile.food < hex.tile.laborers.size * Laborer.FOOD_CONSUMPTION
-      ) {
-        const neededFood = Math.max(
-          0,
-          hex.tile.laborers.size * Laborer.FOOD_CONSUMPTION - hex.tile.food,
-        );
-        const takeFood = Math.min(neededFood, food);
-        GoodsItem.num = food -= takeFood;
-        hex.tile.food += takeFood;
+			) {
+				const neededFood = Math.max(
+					0,
+					hex.tile.laborers.size * Laborer.FOOD_CONSUMPTION - hex.tile.food,
+				);
+				const takeFood = Math.min(neededFood, food);
+				GoodsItem.num = food -= takeFood;
+				hex.tile.food += takeFood;
 
-        if (food <= 0) {
-          GoodsItem.destroy();
-          return;
-        }
-      }
+				if (food <= 0) {
+					GoodsItem.destroy();
+					return;
+				}
+			}
 
-      // Move surplus Food to City
-      let closestHex = null;
-      let closestDistance = Infinity;
-      cities.forEach((cityHex) => {
-        const dist = Hex.Grid.distance(hex, cityHex);
-        if (dist < closestDistance) {
-          closestHex = cityHex;
-          closestDistance = dist;
-        }
-      });
+			// Move surplus Food to City
+			let closestHex = null;
+			let closestDistance = Infinity;
+			cities.forEach((cityHex) => {
+				const dist = Hex.Grid.distance(hex, cityHex);
+				if (dist < closestDistance) {
+					closestHex = cityHex;
+					closestDistance = dist;
+				}
+			});
 
-      if (Hex.isHex(closestHex) && City.isCity(closestHex.city)) {
-        if (GoodsItem.setPath(closestHex) !== null) {
-          GoodsItem.prepareForNewTurn();
-          GoodsItem.moveOneTurn();
-        }
-        // TODO: What if there's no path?!
-      }
+			if (Hex.isHex(closestHex) && City.isCity(closestHex.city)) {
+				if (GoodsItem.setPath(closestHex) !== null) {
+					GoodsItem.prepareForNewTurn();
+					GoodsItem.moveOneTurn();
+				}
+				// TODO: What if there's no path?!
+			}
 
-      // TODO: Limit lifespan of Food goods on the board
-      if (goodsType === "food" && ++GoodsItem.rounds > 5) {
-        GoodsItem.destroy();
-      }
-    });
+			// TODO: Limit lifespan of Food goods on the board
+			if (goodsType === "food" && ++GoodsItem.rounds > 5) {
+				GoodsItem.destroy();
+			}
+		});
 
-    Hex.Grid.forEach((hex) => {
-      if (
-        hex.tile.laborers.size > 0 &&
+		Hex.Grid.forEach((hex) => {
+			if (
+				hex.tile.laborers.size > 0 &&
         hex.tile.food < hex.tile.laborers.size * Laborer.FOOD_CONSUMPTION
-      ) {
-        // TODO: Laborer Starves!
-      }
+			) {
+				// TODO: Laborer Starves!
+			}
 
-      // TODO: Feed Laborers from Tile food reserves
-      hex.tile.food -= hex.tile.laborers.size * Laborer.FOOD_CONSUMPTION;
-    });
+			// TODO: Feed Laborers from Tile food reserves
+			hex.tile.food -= hex.tile.laborers.size * Laborer.FOOD_CONSUMPTION;
+		});
 
-    Promise.all(delaysForEndRound).then(() => {
-      this.betweenRounds = false;
-      this.startRound();
-    });
-  },
+		Promise.all(delaysForEndRound).then(() => {
+			this.betweenRounds = false;
+			this.startRound();
+		});
+	},
 };
 currentGame.events.on("end-turn", currentGame.endTurn.bind(currentGame));

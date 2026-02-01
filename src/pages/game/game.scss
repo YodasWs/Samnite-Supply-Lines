@@ -18,6 +18,10 @@
 		display: flex;
 	}
 
+	&.game-win > :not(canvas) {
+		display: none;
+	}
+
 	> .scene {
 		@extend %full-screen;
 		z-index: -1;

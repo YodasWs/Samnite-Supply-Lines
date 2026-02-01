@@ -59,6 +59,7 @@ yodasws.page('pageGame').setRoute({
 
 	Promise.all(Object.values(Scenes).map((scene) => {
 		game.scene.add(scene.key, scene, scene.autoStart || false);
+		// TODO: This jumps right into the game. The finished program needs to open the title screen first.
 		if (scene.autoStart) {
 			return new Promise((resolve) => {
 				game.events.once(`scene-created-${scene.key}`, resolve);
@@ -68,6 +69,7 @@ yodasws.page('pageGame').setRoute({
 	})).then(() => {
 		currentGame.events.emit('phaser-ready');
 	}).then(() => {
+		// TODO: Move this to Main Menu for "Start Game"
 		game.scene.moveAbove('mainGameScene', 'mainControls');
 		if (game.scene.isActive('mainGameScene') && game.scene.isActive('mainControls')) {
 			currentGame.startRound();

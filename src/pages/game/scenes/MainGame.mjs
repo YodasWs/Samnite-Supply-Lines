@@ -239,6 +239,8 @@ export default {
 		currentGame.scenes.mainGame = this;
 	},
 	create() {
+		document.querySelector('main').classList.remove('game-win');
+
 		MainGameScene = this;
 
 		// Add graphics objects

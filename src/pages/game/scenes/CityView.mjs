@@ -3,6 +3,7 @@ import * as GameConfig from '../modules/Config.mjs';
 
 import * as Hex from '../modules/Hex.mjs';
 import { currentGame, Tester } from '../modules/Game.mjs';
+import { FogOfWar } from '../views/TileView.mjs';
 
 import InputManager from '../modules/InputManager.mjs';
 
@@ -92,7 +93,7 @@ export default {
 		{
 			// Lay black background
 			const graphics = this.add.graphics({ x: 0, y: 0 }).setDepth(0);
-			graphics.fillStyle(0x000000, 0.5);
+			graphics.fillStyle(0xffffff, 0.5);
 			graphics.fillRect(0, 0, windowConfig.width, windowConfig.height);
 		}
 		const graphics = this.add.graphics({ x: 0, y: 0 }).setDepth(1);
@@ -129,6 +130,12 @@ export default {
 			const img = this.add.image(tileCenter.x, tileCenter.y, `tile.${hex.terrain.terrain}`).setDepth(1);
 			img.scaleX = tileScale;
 			img.scaleY = tileScale;
+
+			if (!FogOfWar.isHexExplored(currentGame.currentPlayer, hex)) {
+				img.setTintFill(0x000000);
+				return;
+			}
+
 			currentGame.markTerritory(hex, {
 				offsetX: 0 - hex.x + center.x + (hex.x - offsetX) * tileScale,
 				offsetY: 0 - hex.y + center.y + (hex.y - offsetY) * tileScale,

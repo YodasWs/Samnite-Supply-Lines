@@ -86,9 +86,6 @@ export class FogOfWar {
 		if (!Hex.isHex(hex)) {
 			throw new TypeError('FogOfWar.isHexVisible expects to be assigned object instance of Hex!');
 		}
-		if (!Hex.isHex(hex)) {
-			return false;
-		}
 		if (!fogOfWarMaps.has(faction)) {
 			return false;
 		}

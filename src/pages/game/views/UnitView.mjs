@@ -1,5 +1,6 @@
 import * as GameConfig from '../modules/Config.mjs';
 import { currentGame } from '../modules/Game.mjs';
+import { FogOfWar } from '../views/TileView.mjs';
 
 const unitSprites = new Map(); // key: Unit instance → UnitViewDetail
 
@@ -14,7 +15,7 @@ class UnitViewDetail {
 		this.#hex = unit.hex;
 		this.#scene = scene;
 		this.#sprite = scene.add.sprite(this.#hex.x, this.#hex.y + offsetY, `unit.${unit.unitType}`)
-			.setTint(0x383838)
+			.setTint(0x383838).setVisible(false)
 			.setDepth(GameConfig.depths.inactiveUnits);
 		this.#sprite.setScale(GameConfig.unitWidth / this.#sprite.width);
 	}
@@ -50,6 +51,7 @@ export function registerUnitToView(unit, scene) {
 	return unitSprites.has(unit);
 }
 
+// TODO: Only call this when the player's fog of war changes
 export function renderUnits() {
 	unitSprites.forEach((detail, unit) => {
 		if (unit.deleted) {
@@ -66,12 +68,17 @@ export function renderUnits() {
 			});
 		}
 
-		detail.sprite.setVisible(true);
+		// TODO: Do we want to show the last known position of enemy units?
+		if (FogOfWar.isHexVisible(currentGame.players[0], unit.hex)) {
+			detail.sprite.setVisible(true);
 
-		if (currentGame.activeUnit === unit) {
-			detail.sprite.setTint(0xffffff).setDepth(GameConfig.depths.activeUnit);
+			if (currentGame.activeUnit === unit) {
+				detail.sprite.setTint(0xffffff).setDepth(GameConfig.depths.activeUnit);
+			} else {
+				detail.sprite.setTint(0x383838).setDepth(GameConfig.depths.inactiveUnits);
+			}
 		} else {
-			detail.sprite.setTint(0x383838).setDepth(GameConfig.depths.inactiveUnits);
+			detail.sprite.setVisible(false);
 		}
 	});
 }

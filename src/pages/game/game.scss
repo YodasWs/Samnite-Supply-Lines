@@ -100,7 +100,7 @@
 		right: auto;
 		top: 50px;
 		left: 0;
-		flex-flow: column nowrap;
+		flex-flow: column wrap;
 
 		> div {
 			flex-basis: 100%;
@@ -119,6 +119,11 @@
 			&[hidden] {
 				display: none;
 			}
+		}
+
+		h6 {
+			align-self: center;
+			color: white;
 		}
 
 		@media (orientation: portrait) {

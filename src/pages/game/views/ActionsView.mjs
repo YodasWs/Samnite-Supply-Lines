@@ -50,6 +50,9 @@ currentGame.events.on('phaser-ready', () => {
 		tileMenu: document.getElementById('tile-menu'),
 		unitMenu: document.getElementById('unit-menu'),
 	};
+	dom.tileMenu.defaultHTML = dom.tileMenu.innerHTML;
+	dom.unitMenu.defaultHTML = dom.unitMenu.innerHTML;
+	// TODO: Do I want to nest the buttons in a div sibling of the menu title, for better styling and easier clearing of buttons without affecting the title?
 });
 
 function buildActionButton(div, context, action) {
@@ -96,7 +99,7 @@ function OpenUnitActionMenu(evt) {
 currentGame.events.on('unit-activated', OpenUnitActionMenu);
 
 function CloseUnitActionMenu() {
-	dom.unitMenu.innerHTML = '';
+	dom.unitMenu.innerHTML = dom.unitMenu.defaultHTML;
 	dom.unitMenu.setAttribute('hidden', true);
 }
 currentGame.events.on('unit-deactivated', CloseUnitActionMenu);
@@ -148,6 +151,7 @@ function OpenTileMenu(evt) {
 	} else {
 		cancel.innerHTML = 'Cancel';
 	}
+	cancel.setAttribute('title', 'Close this menu');
 	cancel.addEventListener('click', () => {
 		currentGame.events.emit('esc-pressed');
 	});
@@ -163,7 +167,7 @@ currentGame.events.on('hex-clicked', OpenTileMenu);
 function CloseTileMenu(evt) {
 	currentGame.activeTile = null;
 	dom.tileMenu.setAttribute('hidden', true);
-	dom.tileMenu.innerHTML = '';
+	dom.tileMenu.innerHTML = dom.tileMenu.defaultHTML;
 }
 currentGame.events.on('esc-pressed', CloseTileMenu);
 currentGame.events.on('center-map', CloseTileMenu);

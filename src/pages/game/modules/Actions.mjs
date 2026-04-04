@@ -6,19 +6,6 @@ import Laborer from './Laborer.mjs';
 import Unit from './Unit.mjs';
 import { currentGame, Tester } from './Game.mjs';
 
-// TODO: Base action object:
-/*
-action = {
-	key: 'nameOfAction',
-	text: ({ hex, unit, faction }) => 'User-facing Action Name',
-	sprite: 'optional-sprite-key',
-	isValidOption: ({ hex, unit, faction }) => true/false,
-	doAction: ({ hex, unit, faction }) => {
-		// Perform action
-	},
-}
-/**/
-
 class GameAction {
 	constructor(definition) {
 		[

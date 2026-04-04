@@ -196,7 +196,6 @@ currentGame.events.on('goods-created', (evt) => {
 
 export default {
 	key: sceneKey,
-	autoStart: true,
 	preload() {
 		// Load World Tile Images
 		Object.entries(GameConfig.World.terrains).forEach(([key, terrain]) => {
@@ -240,6 +239,7 @@ export default {
 	},
 	create() {
 		document.querySelector('main').classList.remove('game-win');
+		this.scene.launch('mainControls');
 
 		MainGameScene = this;
 
@@ -374,9 +374,16 @@ export default {
 			this.inputManager.enableKeyboardInput();
 		});
 
-		this.cameras.main.setZoom(0.5);
+		this.cameras.main.setZoom(0.7);
 
 		this.game.events.emit(`scene-created-${sceneKey}`);
+
+		this.game.events.once('scene-created-mainControls', () => {
+			this.game.scene.moveAbove('mainGameScene', 'mainControls');
+			currentGame.startRound();
+		});
+
+		document.getElementById('zoom').removeAttribute('hidden');
 	},
 	update() {
 		this.inputManager.update();

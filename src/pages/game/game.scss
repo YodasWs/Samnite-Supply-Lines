@@ -69,6 +69,10 @@
 		top: max(10%, 50px);
 		flex-flow: column nowrap;
 
+		&[hidden] {
+			display: none;
+		}
+
 		> button {
 			cursor: pointer;
 			min-height: 25px;

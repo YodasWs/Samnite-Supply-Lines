@@ -69,11 +69,6 @@ yodasws.page('pageGame').setRoute({
 	})).then(() => {
 		currentGame.events.emit('phaser-ready');
 	}).then(() => {
-		// TODO: Move this to Main Menu for "Start Game"
-		game.scene.moveAbove('mainGameScene', 'mainControls');
-		if (game.scene.isActive('mainGameScene') && game.scene.isActive('mainControls')) {
-			currentGame.startRound();
-		}
 	});
 
 	Object.assign(currentGame, {

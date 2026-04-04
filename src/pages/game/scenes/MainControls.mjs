@@ -11,7 +11,6 @@ const imgs = new Map(); // key: resource type → Phaser.Image
 
 export default {
 	key: sceneKey,
-	autoStart: true,
 	preload() {
 		this.load.image('coins', 'img/resources/coins.png');
 	},

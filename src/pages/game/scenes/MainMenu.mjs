@@ -14,6 +14,7 @@ const sceneKey = 'mainMenu';
 
 export default {
 	key: sceneKey,
+	autoStart: true,
 	preload() {
 		currentGame.scenes[sceneKey] = this;
 	},
@@ -29,6 +30,12 @@ export default {
 			align: 'center',
 			fixedWidth: windowConfig.width,
 		});
+
+		setTimeout(() => {
+			this.input.on('pointerup', () => {
+				this.scene.start('mainGameScene');
+			});
+		}, 500);
 	},
 	update() {
 	},

@@ -36,6 +36,8 @@ export default {
 				this.scene.start('mainGameScene');
 			});
 		}, 500);
+
+		this.game.events.emit(`scene-created-${sceneKey}`);
 	},
 	update() {
 	},

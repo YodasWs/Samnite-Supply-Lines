@@ -103,15 +103,17 @@
 		flex-flow: column wrap;
 
 		> div {
-			flex-basis: 100%;
+			flex-grow: 1;
 			padding: 5px;
 			display: flex;
-			flex-flow: column wrap;
-			justify-content: space-evenly;
+			flex-flow: column nowrap;
+			justify-content: flex-start;
 			background: green;
 
-			+ :where(div:not([hidden]), div:not(:empty)),
-			&:has(+ :where(div:not([hidden]), div:not(:empty))) {
+			> div {
+				flex-grow: 1;
+				display: flex;
+				flex-flow: column wrap;
 				justify-content: space-around;
 			}
 

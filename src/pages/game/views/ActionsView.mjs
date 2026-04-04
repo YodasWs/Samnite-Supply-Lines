@@ -50,8 +50,13 @@ currentGame.events.on('phaser-ready', () => {
 		tileMenu: document.getElementById('tile-menu'),
 		unitMenu: document.getElementById('unit-menu'),
 	};
-	dom.tileMenu.defaultHTML = dom.tileMenu.innerHTML;
-	dom.unitMenu.defaultHTML = dom.unitMenu.innerHTML;
+	[
+		dom.tileMenu,
+		dom.unitMenu,
+	].forEach((menu) => {
+		menu.buttons = document.createElement('div');
+		menu.appendChild(menu.buttons);
+	});
 	// TODO: Do I want to nest the buttons in a div sibling of the menu title, for better styling and easier clearing of buttons without affecting the title?
 });
 
@@ -92,15 +97,15 @@ function OpenUnitActionMenu(evt) {
 		faction,
 	};
 
-	ActionHandler.getAvailableActions(context).forEach(buildActionButton.bind(null, dom.unitMenu, context));
+	ActionHandler.getAvailableActions(context).forEach(buildActionButton.bind(null, dom.unitMenu.buttons, context));
 	dom.unitMenu.removeAttribute('hidden');
 	dom.menus.removeAttribute('hidden');
 }
 currentGame.events.on('unit-activated', OpenUnitActionMenu);
 
 function CloseUnitActionMenu() {
-	dom.unitMenu.innerHTML = dom.unitMenu.defaultHTML;
 	dom.unitMenu.setAttribute('hidden', true);
+	dom.unitMenu.buttons.innerHTML = '';
 }
 currentGame.events.on('unit-deactivated', CloseUnitActionMenu);
 currentGame.events.on('unit-moving', CloseUnitActionMenu);
@@ -142,7 +147,7 @@ function OpenTileMenu(evt) {
 	currentGame.activeTile = hex;
 
 	// Build menu
-	possibleActions.forEach(buildActionButton.bind(null, dom.tileMenu, context));
+	possibleActions.forEach(buildActionButton.bind(null, dom.tileMenu.buttons, context));
 
 	// Add cancel button
 	const cancel = document.createElement('button');
@@ -156,7 +161,7 @@ function OpenTileMenu(evt) {
 		currentGame.events.emit('esc-pressed');
 	});
 	cancel.style.pointerEvents = 'auto';
-	dom.tileMenu.appendChild(cancel);
+	dom.tileMenu.buttons.appendChild(cancel);
 
 	dom.tileMenu.style.zIndex = 1;
 	dom.tileMenu.removeAttribute('hidden');
@@ -167,7 +172,7 @@ currentGame.events.on('hex-clicked', OpenTileMenu);
 function CloseTileMenu(evt) {
 	currentGame.activeTile = null;
 	dom.tileMenu.setAttribute('hidden', true);
-	dom.tileMenu.innerHTML = dom.tileMenu.defaultHTML;
+	dom.tileMenu.buttons.innerHTML = '';
 }
 currentGame.events.on('esc-pressed', CloseTileMenu);
 currentGame.events.on('center-map', CloseTileMenu);

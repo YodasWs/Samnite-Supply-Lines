@@ -156,7 +156,7 @@ currentGame.events.on('hex-clicked', (evt) => {
 	if (!Tester.isHex(hex) || !Tester.isTile(hex.tile)) return;
 	if (!TileView.FogOfWar.isHexExplored(currentGame.players[0], hex)) return;
 	ActionSprites.spriteOnActiveTile.setActive(true).setVisible(true).setPosition(hex.x, hex.y).setDepth(GameConfig.depths.actionSprites);
-	MainGameScene.cameras.main.pan(hex.x, hex.y, 500, 'Linear', true);
+	MainGameScene.cameras?.main?.pan(hex.x, hex.y, 500, 'Linear', true);
 });
 
 function hideActiveTileSprite() {

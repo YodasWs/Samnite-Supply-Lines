@@ -15,6 +15,14 @@ import { currentGame } from './modules/Game.mjs';
 import Scenes from './scenes/scenes.mjs';
 import './views/ActionsView.mjs';
 
+const windowConfig = GameConfig.getWindowConfig();
+const palette = { // Olive Grove
+	background: '#3F4A2F', // olive green
+	color: '#F5F1E3', // light parchment
+	accent: '#C2A878', // grain gold
+	highlight: '#6B5A3C', // wood brown
+};
+
 yodasws.page('pageGame').setRoute({
 	template: 'pages/game/game.html',
 	canonicalRoute: '/game/',
@@ -47,6 +55,17 @@ yodasws.page('pageGame').setRoute({
 			preload() {
 			},
 			create() {
+				this.cameras.main.setBackgroundColor(palette.background);
+				this.add.text(0, 100, 'Samnite Supply Lines', {
+					fontFamily: 'Trebuchet MS',
+					fontSize: '96px',
+					fontStyle: 'bold',
+					color: palette.color,
+					stroke: '#3A2F2A',
+					strokeThickness: 0,
+					align: 'center',
+					fixedWidth: windowConfig.width,
+				});
 			},
 			update() {
 			},
@@ -59,7 +78,7 @@ yodasws.page('pageGame').setRoute({
 
 	Promise.all(Object.values(Scenes).map((scene) => {
 		game.scene.add(scene.key, scene, scene.autoStart || false);
-		// TODO: This jumps right into the game. The finished program needs to open the title screen first.
+		// This jumps to the Main Menu Scene
 		if (scene.autoStart) {
 			return new Promise((resolve) => {
 				game.events.once(`scene-created-${scene.key}`, resolve);
@@ -67,6 +86,7 @@ yodasws.page('pageGame').setRoute({
 		}
 		return true;
 	})).then(() => {
+		game.scene.stop('title-screen');
 		currentGame.events.emit('phaser-ready');
 	}).then(() => {
 	});

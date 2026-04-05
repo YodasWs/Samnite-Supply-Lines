@@ -65,31 +65,6 @@ export default {
 			fixedWidth: windowConfig.width,
 		});
 
-		this.input.keyboard.on('keydown', (evt) => {
-			let newPalette;
-			switch (evt.key) {
-				case '1':
-					newPalette = 0;
-					break;
-				case '2':
-					newPalette = 1;
-					break;
-				case '3':
-					newPalette = 2;
-					break;
-				case '4':
-					newPalette = 3;
-					break;
-				case '5':
-					newPalette = 4;
-					break;
-			}
-			if (Number.isInteger(newPalette) && newPalette in palettes) {
-				this.cameras.main.setBackgroundColor(palettes[newPalette].background);
-				sceneText.setColor(palettes[newPalette].color);
-			}
-		});
-
 		setTimeout(() => {
 			this.input.on('pointerup', () => {
 				this.scene.start('mainMenu');

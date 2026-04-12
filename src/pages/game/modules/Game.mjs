@@ -59,6 +59,7 @@ export class Emitter extends EventTarget {
 
 export const currentGame = {
 	events: new Emitter(),
+	nations: [],
 	players: [],
 	turn: 0,
 	activeUnit: null,
@@ -66,6 +67,7 @@ export const currentGame = {
 	intCurrentPlayer: null,
 	graphics: {},
 	scenes: {},
+	currentMainGameSceneMode: 'normal',
 	newGame() {
 		this.players = [];
 		this.turn = 0;
@@ -163,7 +165,9 @@ export const currentGame = {
 
 		// Sam, TODO: Show message to User whose turn it is
 
+		// Set Game State
 		this.intCurrentPlayer = intPlayer;
+		this.currentMainGameSceneMode = 'normal';
 
 		// Reset each unit's movement points
 		this.currentPlayer.units.forEach((unit) => {

@@ -113,6 +113,18 @@ const ActionExecutors = {
 	endTurn() {
 		currentGame.events.emit('end-turn');
 	},
+	gotoSelectHexForAction({ unit, hex }, action) {
+		// TODO: This is basically the same as startMoveTo, but here the User has clicked the action button first and must now select the hex to target.
+		// TODO: Need to include a way for the player to cancel out of this action without building a farm, probably by right-clicking or pressing the Esc key.
+		console.log('Sam, action gotoSelectHexForAction not implemented yet');
+		switch (action.key) {
+			case 'plan-build-farm':
+				currentGame.currentMainGameSceneMode = 'select:farm';
+				// TODO: Change cursor to farm icon, highlighting hexes as the player hovers over them, and then execute buildFarm when the player clicks a valid hex.
+				// TODO: Need a way for the player to rotate the farm before building it, which would affect which hexes are valid for building and how the farm is displayed on the map. A simple clockwise/counterclockwise toggle would probably be sufficient for this. Needs to accept keyboard and touch input.
+				break;
+		}
+	},
 	skip({ unit }) {
 		unit.deactivate(true);
 	},

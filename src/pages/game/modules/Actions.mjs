@@ -5,6 +5,7 @@ import * as Hex from './Hex.mjs';
 import Laborer from './Laborer.mjs';
 import Unit from './Unit.mjs';
 import { currentGame, Tester } from './Game.mjs';
+import * as TileView from '../views/TileView.mjs';
 
 class GameAction {
 	constructor(definition) {
@@ -114,9 +115,8 @@ const ActionExecutors = {
 		currentGame.events.emit('end-turn');
 	},
 	gotoSelectHexForAction({ unit, hex }, action) {
-		// TODO: This is basically the same as startMoveTo, but here the User has clicked the action button first and must now select the hex to target.
+		// This is basically the same as startMoveTo, but here the User has clicked the action button first and must now select the hex to target.
 		// TODO: Need to include a way for the player to cancel out of this action without building a farm, probably by right-clicking or pressing the Esc key.
-		console.log('Sam, action gotoSelectHexForAction not implemented yet');
 		switch (action.key) {
 			case 'plan-build-farm':
 				console.log('Sam, entering select:Farm mode');
@@ -164,6 +164,26 @@ export class ActionHandler {
 		return [...ActionRegistry.values()].filter(action => action.isValid(context));
 	}
 }
+
+currentGame.events.on('hex-clicked', (evt) => {
+	switch (currentGame.currentMainGameSceneMode) {
+		case 'normal':
+			// no-op, handled by ActionsView
+			return;
+		case 'select:Farm':
+			const unit = currentGame.activeUnit;
+			const hex = evt.detail?.hex;
+			if (!Unit.isUnit(unit) || !Tester.isHex(hex) || !TileView.FogOfWar.isHexExplored(currentGame.currentPlayer, hex)) {
+				currentGame.events.emit('return-to-normal');
+				return;
+			}
+			ActionHandler.handle('build-farm', {
+				unit,
+				hex,
+			});
+			return;
+	}
+});
 
 currentGame.events.on('key-pressed', (evt) => {
 	const unit = currentGame.activeUnit;

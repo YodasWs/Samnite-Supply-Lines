@@ -37,6 +37,17 @@
 			"execute": "startCityView"
 		},
 		{
+			"key": "plan-build-farm",
+			"label": "Build Farm",
+			"description": "Select where to build a farm. The farmer unit will move to that tile and be consumed to become a laborer working the farm.",
+			"icon": "farm-pin.png",
+			"unitTypes": [
+				"farmer"
+			],
+			"showIn": ["unit-actions-menu"],
+			"execute": "gotoSelectHexForAction"
+		},
+		{
 			"key": "build-farm-here",
 			"label": "Build Farm",
 			"description": "Construct a farm on this tile. The farmer unit will be consumed and become a laborer to work the farm.",
@@ -514,7 +525,7 @@
 				"terrain": "grass"
 			},
 			{
-				"terrain": "forest"
+				"terrain": "grass"
 			},
 			{
 				"terrain": "mountain"

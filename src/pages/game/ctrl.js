@@ -28,23 +28,6 @@ yodasws.page('pageGame').setRoute({
 	canonicalRoute: '/game/',
 	route: '/game/?',
 }).on('load', () => {
-	currentGame.nations = [
-		new Nation({
-			index: 0,
-		}),
-	];
-	currentGame.players = [
-		new Faction({
-			index: 0,
-		}),
-		new Faction({
-			index: 1,
-		}),
-		new Faction({
-			index: 2,
-		}),
-	];
-
 	const game = new Phaser.Game({
 		type: Phaser.AUTO,
 		...GameConfig.getWindowConfig(),

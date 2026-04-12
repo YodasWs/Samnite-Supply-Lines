@@ -4,6 +4,11 @@ import { FogOfWar } from '../views/TileView.mjs';
 
 const unitSprites = new Map(); // key: Unit instance → UnitViewDetail
 
+currentGame.events.on('start-new-game', () => {
+	unitSprites.forEach((detail) => detail.destroy());
+	unitSprites.clear();
+});
+
 const offsetY = -30;
 
 class UnitViewDetail {
@@ -37,6 +42,11 @@ class UnitViewDetail {
 	}
 	get y() {
 		return this.#hex.y;
+	}
+
+	destroy() {
+		this.#sprite.setVisible(false);
+		this.#sprite.destroy();
 	}
 
 	update(hex) {
@@ -108,9 +118,7 @@ function destroyUnitSprite(unit) {
 	if (!unitSprites.has(unit)) {
 		return;
 	}
-	const detail = unitSprites.get(unit);
-	detail.sprite.setVisible(false);
-	detail.sprite.destroy();
+	unitSprites.get(unit).destroy();
 	unitSprites.delete(unit);
 }
 currentGame.events.on('unit-destroyed', (evt) => {

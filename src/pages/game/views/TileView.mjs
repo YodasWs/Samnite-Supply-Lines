@@ -151,6 +151,11 @@ currentGame.events.on('unit-moving', (evt) => {
 // Display Improvement on the Tile (or do that in ImprovementView.mjs?)
 const improvementSprites = new Map(); // key: Tile instance, value: Phaser.Sprite
 
+currentGame.events.on('start-new-game', () => {
+	improvementSprites.forEach((detail) => detail.destroy());
+	improvementSprites.clear();
+});
+
 export function renderImprovement(tile, scene) {
 	// TODO: Need to show out-of-date information due to Fog of War
 	const key = tile.improvement?.key;

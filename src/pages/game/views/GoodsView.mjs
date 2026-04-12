@@ -11,6 +11,12 @@ const GoodsSpriteOptions = {
 	yoyo: false,
 };
 
+currentGame.events.on('start-new-game', () => {
+	goodsSprites.forEach((detail) => detail.destroy());
+	HexGoodsGrid.clear();
+	goodsSprites.clear();
+});
+
 const offsets = {
 	spoilage: {
 		x: 0,
@@ -152,6 +158,7 @@ class GoodsViewDetail {
 	}
 
 	destroy() {
+		this.setVisible(false);
 		this.#container.forEach(obj => obj.destroy());
 	}
 
@@ -365,7 +372,6 @@ export function destroyGoodsSprite(goods) {
 	if (!goods.deleted) return; // Only remove view if Goods is truly deleted
 	if (!goodsSprites.has(goods)) return; // Already removed
 	const detail = goodsSprites.get(goods);
-	detail.setVisible(false);
 	detail.destroy();
 	goodsSprites.delete(goods);
 }

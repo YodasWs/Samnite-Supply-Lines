@@ -196,6 +196,9 @@ currentGame.events.on('goods-created', (evt) => {
 
 export default {
 	key: sceneKey,
+	init() {
+		this.game.events.emit('start-new-game');
+	},
 	preload() {
 		// Load World Tile Images
 		Object.entries(GameConfig.World.terrains).forEach(([key, terrain]) => {
@@ -236,6 +239,7 @@ export default {
 			this.load.image(`unit.${unitType}`, `img/units/${unitType}.png`);
 		});
 		currentGame.scenes.mainGame = this;
+		currentGame.newGame();
 	},
 	create() {
 		document.querySelector('main').classList.remove('game-win');

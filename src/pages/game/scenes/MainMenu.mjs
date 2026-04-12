@@ -31,12 +31,11 @@ export default {
 			fixedWidth: windowConfig.width,
 		});
 
-		setTimeout(() => {
-			this.input.on('pointerup', () => {
-				this.scene.start('mainGameScene');
-			});
-		}, 500);
+		this.input.on('pointerup', () => {
+			this.scene.start('mainGameScene');
+		});
 
+		this.scene.stop('mainGameScene');
 		this.game.events.emit(`scene-created-${sceneKey}`);
 	},
 	update() {

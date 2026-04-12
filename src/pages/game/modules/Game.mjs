@@ -66,6 +66,30 @@ export const currentGame = {
 	intCurrentPlayer: null,
 	graphics: {},
 	scenes: {},
+	newGame() {
+		this.players = [];
+		this.turn = 0;
+		this.activeUnit = null;
+		this.currentPlayer = null;
+		this.intCurrentPlayer = null;
+		this.graphics = {};
+		this.nations = [
+			new Nation({
+				index: 0,
+			}),
+		];
+		this.players = [
+			new Faction({
+				index: 0,
+			}),
+			new Faction({
+				index: 1,
+			}),
+			new Faction({
+				index: 2,
+			}),
+		];
+	},
 	startRound() {
 		this.players.forEach((player) => {
 			// Reset each player's units array to remove deleted units

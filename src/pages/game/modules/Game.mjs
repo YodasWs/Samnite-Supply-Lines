@@ -292,6 +292,10 @@ export const currentGame = {
 };
 currentGame.events.on('end-turn', currentGame.endTurn.bind(currentGame));
 
+currentGame.events.on('unit-activated', () => {
+	currentGame.currentMainGameSceneMode = 'normal';
+});
+
 currentGame.events.on('hex-clicked', (evt) => {
 	if (evt.detail?.hex?.row === 2 &&
 		evt.detail?.hex?.col === 2) {

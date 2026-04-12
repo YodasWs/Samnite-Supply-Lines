@@ -187,12 +187,15 @@ export default class InputManager {
 				case 'a':
 					break;
 				case 's':
-					currentGame.events.emit('key-pressed', 'skip');
-					return;
+					if (currentGame.currentMainGameSceneMode === 'normal') {
+						currentGame.events.emit('key-pressed', 'skip');
+						return;
+					}
+					break;
 				case 'd':
 					break;
 				case 'F':
-					if (!evt.altKey && !evt.ctrlKey) {
+					if (currentGame.currentMainGameSceneMode === 'normal' && !evt.altKey && !evt.ctrlKey) {
 						currentGame.events.emit('key-pressed', 'build-farm');
 					}
 					break;
@@ -227,10 +230,22 @@ export default class InputManager {
 				case 'n':
 					break;
 				case 'm':
-					currentGame.events.emit('key-pressed', 'move');
+					switch (currentGame.currentMainGameSceneMode) {
+						case 'normal':
+							currentGame.events.emit('key-pressed', 'move');
+							break;
+					}
 					break;
 				case 'Escape':
-					currentGame.events.emit('esc-pressed');
+					if ([
+						'select:Farm',
+					].includes(currentGame.currentMainGameSceneMode)) {
+						// Reset to normal mode by re-activating unit so player can select a different action or hex
+						currentGame.events.emit('unit-activated', { unit: currentGame.activeUnit });
+						return;
+					} else if (currentGame.currentMainGameSceneMode === 'normal') {
+						currentGame.events.emit('esc-pressed');
+					}
 					break;
 				case 'F1':
 					// TODO: Help
@@ -268,6 +283,20 @@ export default class InputManager {
 				case 'F4':
 					break;
 				case 'F5':
+					break;
+				case 'F6':
+					break;
+				case 'F7':
+					break;
+				case 'F8':
+					break;
+				case 'F9':
+					break;
+				case 'F10':
+					break;
+				case 'F11':
+					break;
+				case 'F12':
 					break;
 			}
 

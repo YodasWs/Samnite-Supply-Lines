@@ -7,6 +7,7 @@ import Goods from './Goods.mjs';
 import Laborer from './Laborer.mjs';
 import Nation from './Nation.mjs';
 import Tile from './Tile.mjs';
+import Unit from './Unit.mjs';
 import * as Hex from './Hex.mjs';
 
 export let GoodsOnBoard = [];
@@ -294,6 +295,13 @@ currentGame.events.on('end-turn', currentGame.endTurn.bind(currentGame));
 
 currentGame.events.on('unit-activated', () => {
 	currentGame.currentMainGameSceneMode = 'normal';
+});
+
+currentGame.events.on('return-to-normal', () => {
+	currentGame.currentMainGameSceneMode = 'normal';
+	if (Unit.isUnit(currentGame.activeUnit)) {
+		currentGame.events.emit('unit-activated', { unit: currentGame.activeUnit });
+	}
 });
 
 currentGame.events.on('hex-clicked', (evt) => {

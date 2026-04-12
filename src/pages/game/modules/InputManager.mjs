@@ -240,8 +240,8 @@ export default class InputManager {
 					if ([
 						'select:Farm',
 					].includes(currentGame.currentMainGameSceneMode)) {
-						// Reset to normal mode by re-activating unit so player can select a different action or hex
-						currentGame.events.emit('unit-activated', { unit: currentGame.activeUnit });
+						// Reset to normal mode
+						currentGame.events.emit('return-to-normal');
 						return;
 					} else if (currentGame.currentMainGameSceneMode === 'normal') {
 						currentGame.events.emit('esc-pressed');

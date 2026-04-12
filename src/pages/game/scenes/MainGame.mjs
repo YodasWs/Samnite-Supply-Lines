@@ -151,12 +151,16 @@ export function ShowActiveUnitHelpSprites(event) {
 }
 
 currentGame.events.on('hex-clicked', (evt) => {
-	// Highlight the clicked tile
+	// First, check if the hex is valid and explored before doing anything
 	const hex = evt.detail?.hex || evt.detail?.unit?.hex;
 	if (!Tester.isHex(hex) || !Tester.isTile(hex.tile)) return;
 	if (!TileView.FogOfWar.isHexExplored(currentGame.players[0], hex)) return;
-	ActionSprites.spriteOnActiveTile.setActive(true).setVisible(true).setPosition(hex.x, hex.y).setDepth(GameConfig.depths.actionSprites);
-	MainGameScene.cameras?.main?.pan(hex.x, hex.y, 500, 'Linear', true);
+
+	if (currentGame.currentMainGameSceneMode === 'normal') {
+		// Highlight the clicked tile
+		ActionSprites.spriteOnActiveTile.setActive(true).setVisible(true).setPosition(hex.x, hex.y).setDepth(GameConfig.depths.actionSprites);
+		MainGameScene.cameras?.main?.pan(hex.x, hex.y, 500, 'Linear', true);
+	}
 });
 
 function hideActiveTileSprite() {

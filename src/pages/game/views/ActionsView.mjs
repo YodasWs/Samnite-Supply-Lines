@@ -167,7 +167,11 @@ function OpenTileMenu(evt) {
 	dom.tileMenu.removeAttribute('hidden');
 	dom.menus.removeAttribute('hidden');
 }
-currentGame.events.on('hex-clicked', OpenTileMenu);
+currentGame.events.on('hex-clicked', () => {
+	if (currentGame.currentMainGameSceneMode === 'normal') {
+		OpenTileMenu();
+	}
+});
 
 function CloseTileMenu(evt) {
 	currentGame.activeTile = null;

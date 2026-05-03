@@ -1,0 +1,18 @@
+<h2>Devlog #11: Finding My Bearings Again</h2>
+<p>It’s been a few months since the last update. Life pulled me in a few different directions, and when I did have time to work on <i>Samnite Supply Lines</i>, I found myself a bit disoriented about how to push the MVP forward. But over the past couple of weeks, I’ve finally started to regain momentum — enough that it feels right to share where things stand.</p>
+<h3>🎨 Title Screen &amp; Game Reset Logic</h3>
+<p>One of the quieter but important additions is the new title screen. It’s still simple, but it gives the project a proper entry point and, more importantly, a clean way to reset the entire game state when starting a new run. That reset logic has been overdue, and getting it in place makes the whole project feel more like a real game rather than a collection of systems glued together.</p>
+<h3>🚜 A Big UX Win: “Tell the Unit What You Want First”</h3>
+<p>The biggest improvement — and the one I’m most excited about — is a new workflow for how Units carry out tasks.</p>
+<p>In older classics like <i>Civilization III</i> or <i>Alpha Centauri</i>, you move a unit to a tile and then tell it what to do. That works fine until you have dozens or hundreds of units marching around. By the time a unit reaches its destination, you’re left wondering:<br><b>“Why did I send you here again?”</b></p>
+<p>I wanted to avoid that problem entirely.</p>
+<p>So now, when you activate a Farmer Unit, you <em>first</em> tell it what you want — for example, “Build a Farm.” Only after choosing the action do you select <em>where</em> you want that Farm built. The Farmer then automatically travels to that hex and performs the action on arrival.</p>
+<p>Under the hood, this meant building the basic “Build Farm Where Unit Is” action, then extending it so the player can click any hex and issue a “Go Build Farm Here” command. From there, I added a dedicated input mode so the game knows that your next click isn’t selecting a tile normally — it’s choosing the target for the build order.</p>
+<p>It’s a small shift in interaction design, but it dramatically improves clarity and reduces mental load. Units now feel purposeful instead of forgetful.</p>
+<h3>🌱 Moving Forward</h3>
+<p>Getting these pieces in place — the title screen, the reset flow, and especially the new Unit‑action workflow — has helped me reorient myself. I’m feeling more grounded in the direction of the MVP again, and I’m excited to keep building from here.</p>
+<p>Keep checking back for more updates; I’ll keep sharing as work progresses.</p>
+<footer>
+	<a href="#!/blog/10/" rel="prev">Previous</a> |
+	<a href="#!/blog/">Blog Home</a>
+</footer>
